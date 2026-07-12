@@ -3,5 +3,5 @@
 blank_issues_enabled: true
 contact_links:
   - name: 📻 Add your station by hand (advanced)
-    url: https://github.com/perminder-klair/subwave-community/blob/main/stations/README.md
+    url: https://github.com/getsubwave/subwave-community/blob/main/stations/README.md
     about: Prefer to open the pull request yourself? Here's the one-file format. Most people should use the "Add my station" form instead — it needs no fork.

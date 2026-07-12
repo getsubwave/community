@@ -25,7 +25,7 @@ single **[`catalog.json`](catalog.json)** at the repo root on each push to `main
 it over the jsDelivr CDN:
 
 ```
-https://cdn.jsdelivr.net/gh/perminder-klair/subwave-community@main/catalog.json
+https://cdn.jsdelivr.net/gh/getsubwave/subwave-community@main/catalog.json
 ```
 
 The controller memoises it (~30 min TTL, refreshable from the admin UI) and degrades to an empty
@@ -40,10 +40,10 @@ An operator can point their station at a fork or mirror with `COMMUNITY_CATALOG_
 The easy way (no fork, no YAML): open one of the issue forms and a bot turns it into a one-file PR
 for a maintainer to review.
 
-- 🎛️ [Add a skill](https://github.com/perminder-klair/subwave-community/issues/new?template=add-skill.yml)
-- 🎙️ [Add a persona](https://github.com/perminder-klair/subwave-community/issues/new?template=add-persona.yml)
-- 📻 [Add a show](https://github.com/perminder-klair/subwave-community/issues/new?template=add-show.yml)
-- 🗺️ [Add your station](https://github.com/perminder-klair/subwave-community/issues/new?template=add-station.yml)
+- 🎛️ [Add a skill](https://github.com/getsubwave/subwave-community/issues/new?template=add-skill.yml)
+- 🎙️ [Add a persona](https://github.com/getsubwave/subwave-community/issues/new?template=add-persona.yml)
+- 📻 [Add a show](https://github.com/getsubwave/subwave-community/issues/new?template=add-show.yml)
+- 🗺️ [Add your station](https://github.com/getsubwave/subwave-community/issues/new?template=add-station.yml)
 
 Prefer to open the PR yourself? See **[CONTRIBUTING.md](CONTRIBUTING.md)** for each type's schema
 and validation rules. `node scripts/build-catalog.mjs --check` validates your entry locally.

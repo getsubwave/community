@@ -7,24 +7,23 @@ station is **one JSON file** in this directory.
 ## How to submit (the easy way — no fork)
 
 Hit **"Add your station"** on the [`/stations`](https://getsubwave.com/stations)
-page (or open the [station form](https://github.com/perminder-klair/subwave/issues/new?template=add-station.yml)
+page (or open the [station form](https://github.com/getsubwave/subwave-community/issues/new?template=add-station.yml)
 directly). Fill in the fields and submit — that's it. A bot turns your issue into
 a one-file pull request, and a maintainer reviews and merges it. **You don't need
 to fork the repo or write any JSON.** Your station appears on the map on the next
-deploy. Edit the issue later and the PR updates itself automatically.
+site deploy. Edit the issue later and the PR updates itself automatically.
 
 ## How to submit (by hand)
 
 Prefer to open the pull request yourself?
 
-1. **Fork** the repo.
-2. Add a file at `web/content/stations/<your-slug>.json` — the filename (minus
-   `.json`) becomes the station's slug, so keep it short and kebab-case, e.g.
+1. **Fork** this repo.
+2. Add a file at `stations/<your-slug>.json` — the filename (minus `.json`)
+   becomes the station's slug, so keep it short and kebab-case, e.g.
    `night-owl-radio.json`.
-3. Fill in the fields below and **open a pull request against `develop`**. A
+3. Fill in the fields below and **open a pull request against `main`**. A
    maintainer reviews and merges it; your station then shows up on the next
-   deploy. (PRs to `main` are blocked by CI — `main` is the release branch and
-   only takes `develop`.)
+   site deploy.
 
 One file per station keeps pull requests from colliding and makes each entry
 trivial to review or revert.
