@@ -34,7 +34,7 @@ jobs:
           node-version: '20'
       - name: Build catalog.json
         run: node scripts/build-catalog.mjs
-      - name: Commit if changed
+      - name: Commit + purge CDN if changed
         run: |
           if git diff --quiet -- catalog.json; then
             echo "catalog.json unchanged"
@@ -45,3 +45,7 @@ jobs:
           git add catalog.json
           git commit -m 'chore: rebuild catalog.json'
           git push
+          # Purge the jsDelivr branch cache so stations pick up the new index
+          # within their poll TTL rather than waiting out jsDelivr's ~12h @main
+          # cache. Best-effort — a failed purge just means slower propagation.
+          curl -fsS "https://purge.jsdelivr.net/gh/${GITHUB_REPOSITORY}@main/catalog.json" || true
