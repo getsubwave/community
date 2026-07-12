@@ -1,0 +1,278 @@
+name: Show submission → PR
+
+# Turns a "🎬 Share a show" issue (see .github/ISSUE_TEMPLATE/add-show.yml)
+# into a one-file pull request that adds a community show under
+# shows/<slug>/SHOW.md — so contributors can share a show WITHOUT forking the
+# repo or hand-writing frontmatter. A maintainer then reviews and merges the
+# generated PR; the catalog rebuilds on merge and the show becomes installable
+# from every station's admin panel shortly after — no release or upgrade needed.
+#
+# A shared show carries only its topic brief + music filters (moods / genres /
+# eras / energies / strict-filter, plus the programme + banter flags). Personas,
+# playlists, theme and schedule are install-specific and deliberately excluded —
+# every operator wires those up after installing.
+#
+# This mirrors .github/workflows/persona-submission.yml. Security: the issue body
+# is UNTRUSTED user input. It is parsed and written to a file entirely inside
+# actions/github-script via the REST API (Buffer/base64, createOrUpdateFileContents)
+# — NEVER interpolated into a shell `run:` step, so there is no command-injection
+# surface. The only file this workflow can write is
+# shows/<slug>/SHOW.md (slug sanitised + validated against SLUG_RE). Shows are
+# data-only by construction — no code ever ships through this path.
+
+# NOTE: the `show-submission` label MUST exist as a repo label, otherwise GitHub
+# silently drops it from the issue template and the `if:` guard below never
+# matches (every run shows "skipped"). `labeled` is included so a maintainer can
+# re-trigger a stuck submission by re-applying the label.
+on:
+  issues:
+    types: [opened, edited, labeled]
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+concurrency:
+  group: show-submission-${{ github.event.issue.number }}
+  cancel-in-progress: false
+
+jobs:
+  build-pr:
+    name: Build show PR from issue
+    runs-on: ubuntu-latest
+    if: contains(join(github.event.issue.labels.*.name, ','), 'show-submission')
+    steps:
+      - uses: actions/github-script@v7
+        with:
+          script: |
+            const issue = context.payload.issue;
+            const { owner, repo } = context.repo;
+            const BASE = 'main';
+            const DIR = 'shows';
+
+            const SLUG_RE = /^[a-z0-9][a-z0-9-]{0,48}$/;
+            // Music-filter vocab — mirrored inline so a submitted show always
+            // passes the controller's own show validation once installed.
+            const SHOW_MOODS = new Set([
+              'energetic', 'calm', 'reflective', 'celebratory', 'romantic', 'spiritual',
+              'focus', 'workout', 'driving', 'cooking', 'rainy', 'sunny', 'night',
+              'morning', 'evening', 'festival', 'cultural',
+            ]);
+            const SHOW_ENERGY = new Set(['low', 'medium', 'high']);
+
+            // --- 1. Parse the issue-form body into a { heading: value } map ---
+            // GitHub renders each field as "### <label>\n\n<value>"; empty optional
+            // fields render as "_No response_". Walk line-by-line so a multi-line
+            // brief isn't truncated.
+            const body = issue.body || '';
+            const fields = {};
+            let curKey = null, buf = [];
+            const flush = () => {
+              if (curKey === null) return;
+              let v = buf.join('\n').trim();
+              if (v === '_No response_') v = '';
+              fields[curKey] = v;
+            };
+            for (const line of body.split(/\r?\n/)) {
+              const h = line.match(/^###\s+(.+?)\s*$/);
+              if (h) { flush(); curKey = h[1].trim(); buf = []; }
+              else if (curKey !== null) { buf.push(line); }
+            }
+            flush();
+            const get = (label) => (fields[label] || '').trim();
+
+            const slug = get('Show slug').toLowerCase();
+            const displayName = get('Show name');
+            const topic = get('The brief');
+            const moodsRaw = get('Moods');
+            const genresRaw = get('Genres');
+            const erasRaw = get('Eras');
+            const energiesRaw = get('Energies');
+            const segmentSkill = get('Segment skill').toLowerCase();
+
+            // Booleans coerced from a free "true"/"on"/"yes" (case-insensitive);
+            // anything else — including the "off" dropdown default — is false.
+            const bool = (label) => {
+              const v = get(label).toLowerCase();
+              return v === 'true' || v === 'on' || v === 'yes';
+            };
+            const filtersStrict = bool('Strict filters');
+            const programme = bool('Programme mode');
+            const banter = bool('Banter');
+
+            // --- 2. Validate ---
+            const problems = [];
+            if (!slug) problems.push('**Show slug** is required.');
+            else if (!SLUG_RE.test(slug)) problems.push('**Show slug** must be a lowercase slug: start with a letter or digit, then letters/digits/hyphens, ≤49 chars (e.g. `late-feels`).');
+            if (!displayName) problems.push('**Show name** is required.');
+            else if (displayName.length > 60) problems.push('**Show name** must be at most 60 characters.');
+            if (topic.length > 1000) problems.push(`**The brief** must be at most 1000 characters (currently ${topic.length}).`);
+            if (segmentSkill.length > 64) problems.push('**Segment skill** must be at most 64 characters.');
+
+            // Moods — comma list, each in SHOW_MOODS, max 6.
+            let moodList = [];
+            if (moodsRaw) {
+              moodList = moodsRaw.split(',').map((s) => s.trim().toLowerCase()).filter(Boolean);
+              if (moodList.length > 6) problems.push('**Moods** must list at most 6 values.');
+              const bad = moodList.filter((m) => !SHOW_MOODS.has(m));
+              if (bad.length) problems.push(`**Moods** has unknown value(s): ${bad.join(', ')}. Valid: ${[...SHOW_MOODS].join(', ')}.`);
+            }
+
+            // Energies — comma list, each in SHOW_ENERGY, max 6.
+            let energyList = [];
+            if (energiesRaw) {
+              energyList = energiesRaw.split(',').map((s) => s.trim().toLowerCase()).filter(Boolean);
+              if (energyList.length > 6) problems.push('**Energies** must list at most 6 values.');
+              const bad = energyList.filter((e) => !SHOW_ENERGY.has(e));
+              if (bad.length) problems.push(`**Energies** has unknown value(s): ${bad.join(', ')}. Valid: ${[...SHOW_ENERGY].join(', ')}.`);
+            }
+
+            // Genres — free-text comma list, each ≤64 chars, max 6.
+            let genreList = [];
+            if (genresRaw) {
+              genreList = genresRaw.split(',').map((s) => s.trim()).filter(Boolean);
+              if (genreList.length > 6) problems.push('**Genres** must list at most 6 values.');
+              if (genreList.some((g) => g.length > 64)) problems.push('**Genres** — each genre must be at most 64 characters.');
+            }
+
+            // Eras — comma list of `YYYY` or `YYYY-YYYY` windows (1900–2100,
+            // start ≤ end). Re-emitted normalised (whitespace stripped inside
+            // ranges) so the stored value is clean.
+            let eraList = [];
+            if (erasRaw) {
+              const raw = erasRaw.split(',').map((s) => s.trim()).filter(Boolean);
+              if (raw.length > 6) problems.push('**Eras** must list at most 6 windows.');
+              for (const e of raw) {
+                const m = e.match(/^(\d{4})(?:\s*-\s*(\d{4}))?$/);
+                if (!m) { problems.push(`**Eras** window \`${e}\` must be a year (\`1994\`) or a year range (\`1988-1996\`).`); continue; }
+                const from = Number(m[1]);
+                const to = m[2] ? Number(m[2]) : from;
+                if (from < 1900 || from > 2100 || to < 1900 || to > 2100) { problems.push(`**Eras** window \`${e}\` — years must be between 1900 and 2100.`); continue; }
+                if (from > to) { problems.push(`**Eras** window \`${e}\` — the start year can't be after the end year.`); continue; }
+                eraList.push(m[2] ? `${from}-${to}` : `${from}`);
+              }
+            }
+
+            const fail = async (lines) => {
+              await github.rest.issues.createComment({
+                owner, repo, issue_number: issue.number,
+                body: `⚠️ I couldn't build a pull request from this submission:\n\n` +
+                  lines.map((l) => `- ${l}`).join('\n') +
+                  `\n\nEdit the issue to fix it and I'll try again automatically.`,
+              });
+              await github.rest.issues.addLabels({
+                owner, repo, issue_number: issue.number, labels: ['needs-info'],
+              }).catch(() => {});
+            };
+
+            if (problems.length) { await fail(problems); return; }
+
+            const filePath = `${DIR}/${slug}/SHOW.md`;
+            // Provenance: who submitted it (the issue author) and when. `new Date`
+            // is the CI clock (UTC) — this runs in real Node, not a sandbox.
+            const submittedBy = (issue.user && issue.user.login) || '';
+            const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD (UTC)
+
+            // --- 3. Ensure a branch off main ---
+            const branch = `show/${slug}`;
+            const baseRef = await github.rest.git.getRef({
+              owner, repo, ref: `heads/${BASE}`,
+            });
+            const baseSha = baseRef.data.object.sha;
+            try {
+              await github.rest.git.createRef({
+                owner, repo, ref: `refs/heads/${branch}`, sha: baseSha,
+              });
+            } catch (e) {
+              if (e.status !== 422) throw e; // 422 = branch already exists (edited issue)
+            }
+
+            // --- 4. Find any existing copy on the branch (an edited issue, or a
+            // version already merged into main that this branch carries). We
+            // need its blob sha to update in place, and its `dateAdded:` so the
+            // original added-date survives re-runs — only dateModified moves. ---
+            let existingSha;
+            let existingAdded = '';
+            try {
+              const existing = await github.rest.repos.getContent({
+                owner, repo, path: filePath, ref: branch,
+              });
+              existingSha = existing.data.sha;
+              const prev = Buffer.from(existing.data.content || '', 'base64').toString('utf8');
+              const m = prev.match(/^dateAdded:\s*(.+?)\s*$/m);
+              if (m) existingAdded = m[1].trim();
+            } catch (e) {
+              if (e.status !== 404) throw e;
+            }
+            const dateAdded = existingAdded || today;
+
+            // --- 5. Render SHOW.md — flat frontmatter (brief + music filters),
+            // plus the provenance the catalog reads back (submittedBy / dateAdded
+            // / dateModified). Only non-default keys are written, so a plain show
+            // stays minimal (mirrors how the persona flow omits default knobs).
+            // The body is the standing topic brief; omitted when empty. ---
+            const fm = ['---', `name: ${slug}`, `displayName: ${displayName}`];
+            if (moodList.length) fm.push(`moods: ${moodList.join(', ')}`);
+            if (genreList.length) fm.push(`genres: ${genreList.join(', ')}`);
+            if (eraList.length) fm.push(`eras: ${eraList.join(', ')}`);
+            if (energyList.length) fm.push(`energies: ${energyList.join(', ')}`);
+            if (filtersStrict) fm.push('filtersStrict: true');
+            if (programme) fm.push('programme: true');
+            if (banter) fm.push('banter: true');
+            if (segmentSkill) fm.push(`segmentSkill: ${segmentSkill}`);
+            if (submittedBy) fm.push(`submittedBy: ${submittedBy}`);
+            fm.push(`dateAdded: ${dateAdded}`);
+            fm.push(`dateModified: ${today}`);
+            fm.push('---');
+            if (topic) fm.push(topic);
+            fm.push('');
+            const content = fm.join('\n');
+            const contentB64 = Buffer.from(content, 'utf8').toString('base64');
+
+            // --- 6. Write/refresh the show file on that branch ---
+            await github.rest.repos.createOrUpdateFileContents({
+              owner, repo, path: filePath, branch,
+              message: `feat(shows): add ${displayName} community show (from #${issue.number})`,
+              content: contentB64,
+              ...(existingSha ? { sha: existingSha } : {}),
+            });
+
+            // --- 7. Open the PR (or reuse the existing one) ---
+            const open = await github.rest.pulls.list({
+              owner, repo, state: 'open', head: `${owner}:${branch}`,
+            });
+            let pr = open.data[0];
+            const summary = get('What is it? (for reviewers)');
+            const prBody =
+              `Adds the **${displayName}** community show.\n\n` +
+              (summary ? `> ${summary}\n\n` : '') +
+              `Generated automatically from #${issue.number}. Closes #${issue.number}.\n\n` +
+              '```markdown\n' + content + '```\n';
+            if (!pr) {
+              const created = await github.rest.pulls.create({
+                owner, repo, base: BASE, head: branch,
+                title: `feat(shows): add ${displayName} community show`,
+                body: prBody,
+              });
+              pr = created.data;
+              await github.rest.issues.addLabels({
+                owner, repo, issue_number: pr.number, labels: ['shows'],
+              }).catch(() => {});
+            } else {
+              await github.rest.pulls.update({
+                owner, repo, pull_number: pr.number, body: prBody,
+              });
+            }
+
+            // --- 8. Tell the contributor ---
+            await github.rest.issues.removeLabel({
+              owner, repo, issue_number: issue.number, name: 'needs-info',
+            }).catch(() => {});
+            await github.rest.issues.createComment({
+              owner, repo, issue_number: issue.number,
+              body: `✅ Opened ${pr.html_url} with your show at \`${filePath}\`.\n\n` +
+                `A maintainer will review and merge it — your show then goes live in every ` +
+                `station's admin panel shortly after merge (no upgrade needed). Need to ` +
+                `change something? Just edit this issue and the PR updates automatically.`,
+            });

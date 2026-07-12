@@ -1,0 +1,156 @@
+name: 🎬 Share a show with the community
+description: Contribute a show (a standing topic brief plus music filters) to the shared catalog — no fork, no YAML. Fill this in and a pull request is opened for you automatically.
+title: "Add show: "
+labels: ["show-submission"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for sharing a show! A show is a themed block — a standing topic brief
+        for the DJ, plus the music filters that shape what plays under it (moods,
+        genres, eras, energy). A bot turns this issue into a one-file pull request; a
+        maintainer reviews and merges it, and it ships to every station as an
+        installable community show.
+
+        Personas, playlists, theme and schedule stay station-side — every operator
+        wires those up after installing. A shared show carries only its brief and
+        music filters. **You don't need to fork anything.**
+  - type: input
+    id: show-slug
+    attributes:
+      label: Show slug
+      description: Lowercase, hyphenated, starts with a letter or digit (a–z, 0–9, hyphens), ≤49 chars. This is the folder name in the catalog and must be unique.
+      placeholder: late-feels
+    validations:
+      required: true
+  - type: input
+    id: display-name
+    attributes:
+      label: Show name
+      description: The show's name as it appears in the schedule and on air. Up to 60 characters.
+      placeholder: Late Feels
+    validations:
+      required: true
+  - type: textarea
+    id: brief
+    attributes:
+      label: The brief
+      description: >
+        The standing topic brief — what this show is about and how the DJ should
+        colour their talk during it. Written as description, in character. Up to 1000
+        characters. Leave blank if the music filters alone define the show.
+      placeholder: A slow midnight drift for people who aren't ready for the day to end. Keep it hushed, unhurried, one listener at a time.
+    validations:
+      required: false
+  - type: input
+    id: moods
+    attributes:
+      label: Moods
+      description: >
+        Comma-separated, up to 6. Valid values: energetic, calm, reflective,
+        celebratory, romantic, spiritual, focus, workout, driving, cooking, rainy,
+        sunny, night, morning, evening, festival, cultural. Leave blank for none.
+      placeholder: night, reflective
+    validations:
+      required: false
+  - type: input
+    id: genres
+    attributes:
+      label: Genres
+      description: Free-text comma list, up to 6, each ≤64 chars. Whatever the show leans on.
+      placeholder: shoegaze, dream pop
+    validations:
+      required: false
+  - type: input
+    id: eras
+    attributes:
+      label: Eras
+      description: >
+        Comma-separated windows, up to 6 — a single year (1994) or a range
+        (1988-1996). Years 1900–2100. Leave blank for any era.
+      placeholder: 1988-1996
+    validations:
+      required: false
+  - type: input
+    id: energies
+    attributes:
+      label: Energies
+      description: >
+        Comma-separated, up to 6. Valid values: low, medium, high. Leave blank for any.
+      placeholder: low, medium
+    validations:
+      required: false
+  - type: dropdown
+    id: filters-strict
+    attributes:
+      label: Strict filters
+      description: On = the music filters are hard requirements (a track must match); off = they're soft preferences the picker leans toward.
+      options:
+        - "off"
+        - "on"
+      default: 0
+    validations:
+      required: false
+  - type: dropdown
+    id: programme
+    attributes:
+      label: Programme mode
+      description: On = the show airs as a produced episode (intro at the top, one feature per hour, outro at the close). Off = a normal themed block.
+      options:
+        - "off"
+        - "on"
+      default: 0
+    validations:
+      required: false
+  - type: dropdown
+    id: banter
+    attributes:
+      label: Banter
+      description: On = scripted multi-voice exchanges air during the show (needs guest co-hosts, which the operator adds station-side). Off = single voice.
+      options:
+        - "off"
+        - "on"
+      default: 0
+    validations:
+      required: false
+  - type: input
+    id: segment-skill
+    attributes:
+      label: Segment skill
+      description: Optional. Pin one skill kind as the show's recurring feature (e.g. library-deep-cut). Up to 64 characters. Leave blank for none.
+      placeholder: library-deep-cut
+    validations:
+      required: false
+  - type: textarea
+    id: description
+    attributes:
+      label: What is it? (for reviewers)
+      description: One or two sentences on what this show is and why it's worth sharing. Not saved into the show — just helps the maintainer review.
+      placeholder: A hushed late-night drift built from shoegaze and dream pop for people who keep odd hours.
+    validations:
+      required: false
+  - type: markdown
+    attributes:
+      value: |
+        ### Contribution terms
+
+        By submitting a show you agree:
+
+        - The brief is your own work (or cleared for sharing), and contains nothing
+          unlawful, hateful, or designed to deceive listeners.
+        - It contains no secrets or personal data.
+        - Your GitHub username is recorded as the show's submitter (shown as a credit
+          line in the community catalog), along with the dates it was added and last updated.
+        - SUB/WAVE may include, edit, or remove it from the catalog at its discretion.
+        - It's shared under the same licence as the SUB/WAVE repository.
+
+        This isn't legal advice.
+  - type: checkboxes
+    id: confirm
+    attributes:
+      label: Before you submit
+      options:
+        - label: I understand a pull request will be opened from this issue and a maintainer will review it.
+          required: true
+        - label: I agree to the contribution terms above.
+          required: true

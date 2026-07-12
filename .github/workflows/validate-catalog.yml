@@ -1,0 +1,29 @@
+name: Validate catalog
+
+# PR gate: run the catalog builder in --check mode so a malformed submission
+# (bad slug, name/folder mismatch, missing required field, out-of-vocab mood,
+# invalid station JSON) fails BEFORE merge rather than breaking the published
+# catalog.json. Read-only — never writes or commits.
+
+on:
+  pull_request:
+    paths:
+      - 'skills/**'
+      - 'personas/**'
+      - 'shows/**'
+      - 'stations/**'
+      - 'scripts/build-catalog.mjs'
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Validate catalog entries
+        run: node scripts/build-catalog.mjs --check

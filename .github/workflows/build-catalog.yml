@@ -1,0 +1,47 @@
+name: Build catalog.json
+
+# Regenerates the published catalog.json index whenever catalog content lands on
+# main, and commits it back. SUB/WAVE stations fetch this file live (via jsDelivr:
+# https://cdn.jsdelivr.net/gh/perminder-klair/subwave-community@main/catalog.json),
+# so a merged skill/persona/show/station appears on every station without a
+# controller upgrade. Zero-dependency Node script — no install step.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'skills/**'
+      - 'personas/**'
+      - 'shows/**'
+      - 'stations/**'
+      - 'scripts/build-catalog.mjs'
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: build-catalog
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Build catalog.json
+        run: node scripts/build-catalog.mjs
+      - name: Commit if changed
+        run: |
+          if git diff --quiet -- catalog.json; then
+            echo "catalog.json unchanged"
+            exit 0
+          fi
+          git config user.name  'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add catalog.json
+          git commit -m 'chore: rebuild catalog.json'
+          git push

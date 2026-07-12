@@ -1,0 +1,12 @@
+{
+  "name": "subwave-community",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Community catalog (skills, personas, shows, stations) for SUB/WAVE",
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build-catalog.mjs",
+    "check": "node scripts/build-catalog.mjs --check"
+  },
+  "license": "MIT"
+}
