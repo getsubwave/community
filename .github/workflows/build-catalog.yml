@@ -1,10 +1,11 @@
 name: Build catalog.json
 
 # Regenerates the published catalog.json index whenever catalog content lands on
-# main, and commits it back. SUB/WAVE stations fetch this file live (via jsDelivr:
-# https://cdn.jsdelivr.net/gh/getsubwave/subwave-community@main/catalog.json),
-# so a merged skill/persona/show/station appears on every station without a
-# controller upgrade. Zero-dependency Node script — no install step.
+# main, and commits it back. SUB/WAVE stations fetch this file live — by default
+# from raw GitHub (raw.githubusercontent.com/getsubwave/community/main/catalog.json),
+# optionally via the jsDelivr CDN — so a merged skill/persona/show/station appears
+# on every station without a controller upgrade. Zero-dependency Node script — no
+# install step. The jsDelivr purge below only matters for stations using that CDN.
 
 on:
   push:

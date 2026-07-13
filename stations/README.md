@@ -7,7 +7,7 @@ station is **one JSON file** in this directory.
 ## How to submit (the easy way — no fork)
 
 Hit **"Add your station"** on the [`/stations`](https://getsubwave.com/stations)
-page (or open the [station form](https://github.com/getsubwave/subwave-community/issues/new?template=add-station.yml)
+page (or open the [station form](https://github.com/getsubwave/community/issues/new?template=add-station.yml)
 directly). Fill in the fields and submit — that's it. A bot turns your issue into
 a one-file pull request, and a maintainer reviews and merges it. **You don't need
 to fork the repo or write any JSON.** Your station appears on the map on the next

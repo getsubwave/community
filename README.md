@@ -22,15 +22,16 @@ Each entry is **one file (or folder)** so contributions never collide on merge.
 
 A CI job ([`build-catalog.yml`](.github/workflows/build-catalog.yml)) compiles every entry into a
 single **[`catalog.json`](catalog.json)** at the repo root on each push to `main`. Stations fetch
-it over the jsDelivr CDN:
+it from raw GitHub by default (Fastly-fronted, ~5-min cache):
 
 ```
-https://cdn.jsdelivr.net/gh/getsubwave/subwave-community@main/catalog.json
+https://raw.githubusercontent.com/getsubwave/community/main/catalog.json
 ```
 
 The controller memoises it (~30 min TTL, refreshable from the admin UI) and degrades to an empty
 catalog if the fetch fails — a station never stops broadcasting because the catalog is unreachable.
-An operator can point their station at a fork or mirror with `COMMUNITY_CATALOG_URL`.
+An operator can point their station at a fork, a self-hosted mirror, or the jsDelivr CDN
+(`https://cdn.jsdelivr.net/gh/getsubwave/community@main/catalog.json`) with `COMMUNITY_CATALOG_URL`.
 
 **Don't edit `catalog.json` by hand** — it's generated. Edit the source files under `skills/`,
 `personas/`, `shows/`, `stations/` and the workflow rebuilds it.
@@ -40,10 +41,10 @@ An operator can point their station at a fork or mirror with `COMMUNITY_CATALOG_
 The easy way (no fork, no YAML): open one of the issue forms and a bot turns it into a one-file PR
 for a maintainer to review.
 
-- 🎛️ [Add a skill](https://github.com/getsubwave/subwave-community/issues/new?template=add-skill.yml)
-- 🎙️ [Add a persona](https://github.com/getsubwave/subwave-community/issues/new?template=add-persona.yml)
-- 📻 [Add a show](https://github.com/getsubwave/subwave-community/issues/new?template=add-show.yml)
-- 🗺️ [Add your station](https://github.com/getsubwave/subwave-community/issues/new?template=add-station.yml)
+- 🎛️ [Add a skill](https://github.com/getsubwave/community/issues/new?template=add-skill.yml)
+- 🎙️ [Add a persona](https://github.com/getsubwave/community/issues/new?template=add-persona.yml)
+- 📻 [Add a show](https://github.com/getsubwave/community/issues/new?template=add-show.yml)
+- 🗺️ [Add your station](https://github.com/getsubwave/community/issues/new?template=add-station.yml)
 
 Prefer to open the PR yourself? See **[CONTRIBUTING.md](CONTRIBUTING.md)** for each type's schema
 and validation rules. `node scripts/build-catalog.mjs --check` validates your entry locally.
