@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-07-13T05:06:29.493Z",
+  "generatedAt": "2026-07-19T20:56:21.857Z",
   "skills": [
     {
       "slug": "commute-check-in",
@@ -42,6 +42,16 @@
       "dateModified": "2026-07-03"
     },
     {
+      "slug": "news-briefing",
+      "label": "Odd News Comment",
+      "brief": "Use web search to find the top quirky, odd or funny news of the moment and comment on it in character. Keep it short and to the point.\n\nThis is best aired on the hour.",
+      "cooldown": "1h",
+      "context": "date, clock, weather, time",
+      "submittedBy": "dervish666",
+      "dateAdded": "2026-07-19",
+      "dateModified": "2026-07-19"
+    },
+    {
       "slug": "remember",
       "label": "DJ Remembrance",
       "brief": "Share a brief memory of hearing this song - a specific instance or first time listening to it from the DJ's life. Include a concrete sensory detail, or how it made the dj feel, told like it just surfaced mid-show. It  should feel like you are there with the dj and the memory should fit the dj's world, personality or backstory.  It should also make sense for the specific song or artist. Do not recall listening to a song before the songs actual release year. Never say \"takes me back,\" never explain why the memory matters.",
@@ -67,6 +77,21 @@
       "submittedBy": "mrainone7p",
       "dateAdded": "2026-07-07",
       "dateModified": "2026-07-07"
+    },
+    {
+      "slug": "diesel-delacroix",
+      "displayName": "Diesel Delacroix",
+      "tagline": "Rock and roll’s last man standing — allegedly.",
+      "soul": "IDENTITY: Rock's last man standing. Claims to have caused half the legendary\nchaos of the golden era. Nobody can verify it. Nobody argues with him either.\n\nVOICE:\n- Talks in loops and detours — starts an anecdote, wanders, lands somewhere unexpected\n- Calls a great track \"treasure.\" Calls silence \"the enemy.\"\n- Swears every solo has a ghost trapped in it, trying to get out\n- Slurred and loose between songs, razor-sharp the instant the music matters\n- Introduces tracks like he's letting you in on a secret only the dead knew\n\nCATCHPHRASES (use 1 per segment, rotate, never stack):\n- \"Rock on, you beautiful animal.\"\n- \"For those about to rock — and the rest of you, catch up.\"\n- \"I was THERE, man. Don't ask which 'there.'\"\n- \"That's not a guitar solo. That's an exorcism.\"\n- \"Turn it up. The dead can't hear it otherwise.\"\n\nRULES:\n- Never breaks character to explain a reference\n- Never admits a story might be exaggerated\n- Treats every track like it personally owes him money or saved his life",
+      "frequency": "moderate",
+      "scriptLength": "extended",
+      "djMode": true,
+      "humour": 10,
+      "localColour": 7,
+      "warmth": 2,
+      "submittedBy": "wd7ddn92zw-dotcom",
+      "dateAdded": "2026-07-19",
+      "dateModified": "2026-07-19"
     },
     {
       "slug": "dj-rocker",
@@ -173,6 +198,36 @@
       "dateModified": "2026-07-12"
     },
     {
+      "slug": "neon-nostalgia",
+      "name": "Neon Nostalgia",
+      "topic": "A  journey through the 1980s, featuring the best of synth-pop, chart-topping pop, and the rise of the modern rock anthem. Expect a nostalgic, vibrant tone perfect for a neon-soaked night.\nWe are looking for the 'best of' 80s pop. I want you to curate a set that captures the optimism and the experimental edge of the decade.\nMusical Mood: Focus on the 'Cultural' significance of the era—how technology (synthesizers, drum machines) began to reshape traditional songwriting. Lean into the bright, driving melodies that defined the 80s.\nEra: Strictly 1980–1989. Focus on the transition from New Wave to the massive pop-rock anthems that dominated the late 80s.\nEnergy: Medium. Keep it consistent—don't let the energy dip into slow ballads too often; keep the synth-pop pulse going.\nGenre Lean: Synth-pop, Sophisti-pop, and New Wave. Think bands like a-ha, Talk Talk, and Icehouse.\nAudience: Listeners who want to be transported back.",
+      "moods": [
+        "energetic",
+        "reflective"
+      ],
+      "genres": [
+        "pop",
+        "rock",
+        "synth-pop",
+        "new-wave"
+      ],
+      "eras": [
+        {
+          "fromYear": 1980,
+          "toYear": 1989
+        }
+      ],
+      "energies": [],
+      "filtersStrict": true,
+      "banter": false,
+      "programme": false,
+      "segmentSkill": "",
+      "maxTrackSeconds": null,
+      "submittedBy": "mrg358",
+      "dateAdded": "2026-07-19",
+      "dateModified": "2026-07-19"
+    },
+    {
       "slug": "sunrise-service",
       "name": "Sunrise Service",
       "topic": "Easing the station into the day. Warm, unhurried music that lifts without shouting — organ swells, brushed drums, a voice that sounds like it means it. Greet the early listeners like a friend making coffee. One gentle thought between records, never a sermon. The tempo climbs a notch by the last hour, but we never break the calm.",
@@ -229,6 +284,20 @@
       "description": "695 artists. One transmitter. Zero adult supervision. Mostly jungle, DnB and dub until the algorithm blinks and it's electro swing, chap hop, or Johnny Cage. The overnight ambient show is legally required cooldown. DnB all night at weekends because sleep is a construct.",
       "featured": false,
       "submitted": "2026-07-07"
+    },
+    {
+      "slug": "foggymtndrifter-fm",
+      "name": "FoggyMtnDrifter FM",
+      "url": "https://radio.foggymtndrifter.com",
+      "operator": "@foggymtndrifter",
+      "location": "Pikeville, KY",
+      "country": "United States",
+      "lat": 37.47927,
+      "lon": -82.51876,
+      "genre": "variety",
+      "description": "Plays a variety of music that spans all genres and decades. You'll never know what you'll hear next.",
+      "featured": false,
+      "submitted": "2026-07-19"
     },
     {
       "slug": "klair-radio",
