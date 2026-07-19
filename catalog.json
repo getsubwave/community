@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-07-19T20:56:21.857Z",
+  "generatedAt": "2026-07-19T22:33:42.691Z",
   "skills": [
     {
       "slug": "commute-check-in",
@@ -340,19 +340,6 @@
       "description": "The reference station — the one this project is built around. An AI DJ picks the tracks and talks between them, all day.",
       "featured": true,
       "submitted": "2026-06-04"
-    },
-    {
-      "slug": "the-ninth-house",
-      "name": "The Ninth House",
-      "url": "https://subwave.drearburh.uk",
-      "operator": "@whatkatedoes",
-      "location": "Deepest, darkest reaches of Space",
-      "lat": 57.1955,
-      "lon": -3.8259,
-      "genre": "Eclectic, but Space/ambient/soundtrack heavy",
-      "description": "Out in the black, on frequency, the tales of the ramshackle Spaceship \"The Bone Marrow\" and her crew echo like ghost stories.  Ship's mascot and sentient hovering sodacan AI - \"Bubblina\" keeps the interstellar vibe going, with Space cowgirl Scarlett o'Interfacé playing the southern gothic tunes into the early hours.",
-      "featured": false,
-      "submitted": "2026-06-08"
     },
     {
       "slug": "whig-the-hig",
