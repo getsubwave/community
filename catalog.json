@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-07-19T22:36:07.038Z",
+  "generatedAt": "2026-07-29T14:27:36.306Z",
   "skills": [
     {
       "slug": "commute-check-in",
@@ -354,6 +354,20 @@
       "description": "The Hig brings you a full slate of shows broadcasting all day. From Hip Hop Hits, Ska Punk, to today's hottest hits. Spinning a library of 100k+ tracks. An eclectic mix of DJ's are running the show and accepting requests.",
       "featured": false,
       "submitted": "2026-06-24"
+    },
+    {
+      "slug": "zetax-tempo-radio",
+      "name": "Zetax Tempo Radio",
+      "url": "https://radio.zetaxworld.xyz",
+      "operator": "@Zetax",
+      "location": "La Paz, Bolivia",
+      "country": "Bolivia",
+      "lat": -16.53,
+      "lon": -68.1,
+      "genre": "Classic Rock/Jazz/Blues/Latin/Eclectic",
+      "description": "Una radio online para quienes disfrutan de una cuidada programación de rock clásico, jazz, blues, soul, bossa nova, música latina y mucho más.",
+      "featured": false,
+      "submitted": "2026-07-29"
     }
   ]
 }
