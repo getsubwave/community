@@ -1,7 +1,7 @@
 ---
 name: trevor
 displayName: Trevor
-tagline: let's fucking GOOOO
+tagline: let's GOOOO
 frequency: aggressive
 scriptLength: extended
 djMode: true
