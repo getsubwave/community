@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-08-03T21:19:40.615Z",
+  "generatedAt": "2026-08-03T21:21:25.411Z",
   "skills": [
     {
       "slug": "commute-check-in",
@@ -386,6 +386,37 @@
     }
   ],
   "apps": [
+    {
+      "slug": "pico-subwave",
+      "name": "Pico SUB/WAVE",
+      "url": "https://github.com/getsubwave/pico-subwave",
+      "type": "integration",
+      "description": "A desk mini player on a Raspberry Pi Pico 2 W — now playing on the LCD, plus up-next, track info and a physical skip button. Runs MicroPython in a Pimoroni Pico Explorer Base.",
+      "author": "@getsubwave",
+      "platforms": [
+        "Raspberry Pi Pico 2 W",
+        "MicroPython"
+      ],
+      "repo": "https://github.com/getsubwave/pico-subwave",
+      "featured": false,
+      "submitted": "2026-08-03"
+    },
+    {
+      "slug": "subwave-desktop",
+      "name": "SUB/WAVE Desktop",
+      "url": "https://github.com/getsubwave/subwave-desktop",
+      "type": "desktop",
+      "description": "A native desktop player built on the Vercel Native SDK — declarative markup plus Zig logic, drawn by the SDK's own engine. No browser, no WebView. Selectable stream format, cover art, a real spectrum analyzer, live station themes and a mini player.",
+      "author": "@getsubwave",
+      "platforms": [
+        "macOS",
+        "Windows",
+        "Linux"
+      ],
+      "repo": "https://github.com/getsubwave/subwave-desktop",
+      "featured": false,
+      "submitted": "2026-08-03"
+    },
     {
       "slug": "subwave-mcp",
       "name": "SUB/WAVE MCP Server",
