@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-07-31T12:05:47.095Z",
+  "generatedAt": "2026-08-03T21:18:20.479Z",
   "skills": [
     {
       "slug": "commute-check-in",
@@ -383,6 +383,38 @@
       "description": "Una radio online para quienes disfrutan de una cuidada programación de rock clásico, jazz, blues, soul, bossa nova, música latina y mucho más.",
       "featured": false,
       "submitted": "2026-07-29"
+    }
+  ],
+  "apps": [
+    {
+      "slug": "subwave-mcp",
+      "name": "SUB/WAVE MCP Server",
+      "url": "https://github.com/perminder-klair/subwave/tree/main/mcp-subwave",
+      "type": "integration",
+      "description": "A standalone stdio MCP server for a SUB/WAVE station — the local-only alternative to the controller's built-in HTTP MCP endpoint. Drive the booth from any MCP client.",
+      "author": "@perminder-klair",
+      "platforms": [
+        "MCP",
+        "Claude Desktop",
+        "Claude Code"
+      ],
+      "repo": "https://github.com/perminder-klair/subwave/tree/main/mcp-subwave",
+      "featured": false,
+      "submitted": "2026-08-03"
+    },
+    {
+      "slug": "web-player",
+      "name": "SUB/WAVE Web Player",
+      "url": "https://getsubwave.github.io/web-player/",
+      "type": "web",
+      "description": "A lean, forkable reference web player for a SUB/WAVE station — clone, restyle, deploy. Splits data from presentation so you can rebuild the face without touching the wiring.",
+      "author": "@getsubwave",
+      "platforms": [
+        "Web"
+      ],
+      "repo": "https://github.com/getsubwave/web-player",
+      "featured": false,
+      "submitted": "2026-08-03"
     }
   ]
 }

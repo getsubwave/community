@@ -2,10 +2,10 @@
 
 The community exchange for **[SUB/WAVE](https://github.com/perminder-klair/subwave)** — the
 personal internet radio station with an AI DJ. This repo holds the community-contributed
-**skills**, **DJ personas**, **shows**, and the public **station directory**. Every running
-SUB/WAVE station fetches this catalog **live**, so anything merged here shows up in every
-station's admin panel — and on [getsubwave.com](https://getsubwave.com) — without waiting for a
-software release.
+**skills**, **DJ personas**, **shows**, the public **station directory**, and the **apps
+directory**. Every running SUB/WAVE station fetches this catalog **live**, so anything merged
+here shows up in every station's admin panel — and on [getsubwave.com](https://getsubwave.com) —
+without waiting for a software release.
 
 ## What's here
 
@@ -15,8 +15,12 @@ software release.
 | [`personas/`](personas/) | DJ characters — the "soul" + talk/tone knobs | a roster persona in `/admin/personas` → Community |
 | [`shows/`](shows/) | Show templates — a brief + music-steering filters | a show in `/admin/shows` → Community |
 | [`stations/`](stations/) | The public map of live SUB/WAVE stations | a pin on [/stations](https://getsubwave.com/stations) |
+| [`apps/`](apps/) | Third-party apps + integrations built for SUB/WAVE | a card on [/apps](https://getsubwave.com/apps) |
 
 Each entry is **one file (or folder)** so contributions never collide on merge.
+
+`stations/` and `apps/` are **website-only** — they're published in the catalog but a running
+station installs nothing from them. The other three are what a station's admin panel installs.
 
 ## How stations consume it
 
@@ -34,7 +38,7 @@ An operator can point their station at a fork, a self-hosted mirror, or the jsDe
 (`https://cdn.jsdelivr.net/gh/getsubwave/community@main/catalog.json`) with `COMMUNITY_CATALOG_URL`.
 
 **Don't edit `catalog.json` by hand** — it's generated. Edit the source files under `skills/`,
-`personas/`, `shows/`, `stations/` and the workflow rebuilds it.
+`personas/`, `shows/`, `stations/`, `apps/` and the workflow rebuilds it.
 
 ## Contributing
 
@@ -45,6 +49,7 @@ for a maintainer to review.
 - 🎙️ [Add a persona](https://github.com/getsubwave/community/issues/new?template=add-persona.yml)
 - 📻 [Add a show](https://github.com/getsubwave/community/issues/new?template=add-show.yml)
 - 🗺️ [Add your station](https://github.com/getsubwave/community/issues/new?template=add-station.yml)
+- 🧰 [Submit an app](https://github.com/getsubwave/community/issues/new?template=add-app.yml)
 
 Prefer to open the PR yourself? See **[CONTRIBUTING.md](CONTRIBUTING.md)** for each type's schema
 and validation rules. `node scripts/build-catalog.mjs --check` validates your entry locally.

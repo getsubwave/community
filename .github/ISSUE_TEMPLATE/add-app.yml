@@ -1,0 +1,125 @@
+name: 🧰 Submit an app to the directory
+description: List an app or integration you built for SUB/WAVE on the public /apps directory — no fork, no JSON. Fill this in and a pull request is opened for you automatically.
+title: "Add app: "
+labels: ["app-submission"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for building something! Fill in the fields below and submit. A bot will
+        turn this into a one-file pull request to the directory — a maintainer just
+        reviews and merges it. **You don't need to fork anything.**
+
+        Only **name**, **link** and **type** are required. Everything else makes your
+        card nicer.
+  - type: input
+    id: name
+    attributes:
+      label: App name
+      description: The display name shown on your card.
+      placeholder: Night Owl
+    validations:
+      required: true
+  - type: input
+    id: url
+    attributes:
+      label: Link
+      description: Where someone gets it — an app store listing, a website, or the repo.
+      placeholder: https://apps.apple.com/app/night-owl
+    validations:
+      required: true
+  - type: dropdown
+    id: type
+    attributes:
+      label: Type
+      description: Pick the closest fit. Anything that doesn't match the first five is an integration.
+      options:
+        - mobile — iOS / Android / cross-platform handset app
+        - web — alternative web player, embed, or hosted front-end
+        - desktop — macOS / Windows / Linux client, menubar or tray app
+        - terminal — TUI or CLI
+        - bot — Discord / Telegram / Slack / Matrix bot
+        - integration — MCP server, Home Assistant, hardware, library or SDK
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: One or two sentences about what it does. Max 280 characters.
+      placeholder: A one-thumb SUB/WAVE player with a sleep timer and CarPlay support.
+    validations:
+      required: false
+  - type: input
+    id: author
+    attributes:
+      label: Author
+      description: Your name or @handle — who made it. A leading @ links to your GitHub profile.
+      placeholder: "@yourhandle"
+    validations:
+      required: false
+  - type: input
+    id: platforms
+    attributes:
+      label: Platforms
+      description: Comma-separated, up to 6. Whatever it runs on or plugs into.
+      placeholder: iOS, Android, CarPlay
+    validations:
+      required: false
+  - type: input
+    id: repo
+    attributes:
+      label: Source repository
+      description: If it's open source, link the repo. Leave blank if it's closed-source — just say so in the description.
+      placeholder: https://github.com/yourhandle/night-owl
+    validations:
+      required: false
+  - type: input
+    id: icon
+    attributes:
+      label: Icon URL
+      description: >
+        Square image. Must be an https:// URL on raw.githubusercontent.com,
+        user-images.githubusercontent.com, or github.com — the site proxies images
+        through its own pipeline and refuses other hosts. Easiest route: commit the
+        image to your repo and paste the "raw" link.
+      placeholder: https://raw.githubusercontent.com/yourhandle/night-owl/main/icon.png
+    validations:
+      required: false
+  - type: input
+    id: screenshot
+    attributes:
+      label: Screenshot URL
+      description: Wide image (roughly 16:10 looks best). Same host rules as the icon.
+      placeholder: https://raw.githubusercontent.com/yourhandle/night-owl/main/shot.png
+    validations:
+      required: false
+  - type: markdown
+    attributes:
+      value: |
+        ### Listing terms
+
+        By listing an app you agree:
+
+        - Apps are built and maintained by their authors, not by SUB/WAVE. A listing is
+          not an endorsement, a review, or a security audit.
+        - Your app does **not** ask listeners for their station's admin credentials, and
+          does not route those credentials through a third-party server.
+        - If your app is paid or closed-source, you've said so in the description.
+        - Your app contains no malware, no undisclosed telemetry, and injects no
+          advertising into the stream.
+        - Your listing may be removed on a valid complaint or at the maintainer's
+          discretion.
+
+        This isn't legal advice.
+  - type: checkboxes
+    id: confirm
+    attributes:
+      label: Before you submit
+      options:
+        - label: My app works against a SUB/WAVE station, and the link above is public.
+          required: true
+        - label: I understand a pull request will be opened from this issue and a maintainer will review it.
+          required: true
+        - label: I agree to the listing terms above.
+          required: true

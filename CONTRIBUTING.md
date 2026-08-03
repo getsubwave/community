@@ -102,3 +102,34 @@ One JSON object per station for the public directory. `name` and `url` are requi
   "featured": false
 }
 ```
+
+## Apps — `apps/<slug>.json`
+
+One JSON object per app for the public [/apps](https://getsubwave.com/apps) directory — anything
+third-party built against a station: players, bots, TUIs, MCP servers, integrations. `name`, `url`
+and `type` are required.
+
+```json
+{
+  "name": "Night Owl",
+  "url": "https://apps.apple.com/app/night-owl",
+  "type": "mobile",
+  "description": "A one-thumb SUB/WAVE player with a sleep timer and CarPlay.",
+  "author": "@yourhandle",
+  "platforms": ["iOS", "Android"],
+  "repo": "https://github.com/yourhandle/night-owl",
+  "icon": "https://raw.githubusercontent.com/yourhandle/night-owl/main/icon.png",
+  "screenshot": "https://raw.githubusercontent.com/yourhandle/night-owl/main/shot.png"
+}
+```
+
+**Type vocabulary:** `mobile, web, desktop, terminal, bot, integration`. `integration` is the
+catch-all — MCP servers, Home Assistant, hardware, libraries.
+
+**Image hosts:** `icon` and `screenshot` must be `https://` on `raw.githubusercontent.com`,
+`user-images.githubusercontent.com`, or `github.com`. Anything else fails the build — the website
+renders these through its own image pipeline against a matching allowlist, so images are proxied
+rather than hot-linked and can't be swapped after review.
+
+`description` is capped at 280 characters and `platforms` at 6 entries of 24 characters. Full
+field reference and the listing rules are in [`apps/README.md`](apps/README.md).

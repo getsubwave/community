@@ -1,0 +1,71 @@
+name: 🚩 Report an app / takedown request
+description: Report a listed app for abuse, a rights complaint, or because it's broken or gone. Used to request removal from the public /apps directory.
+title: "Report app: "
+labels: ["app-report"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this to flag an app listed on the public **/apps** directory.
+
+        Apps are built and maintained by their authors, not by SUB/WAVE — a listing is
+        a pointer, not an endorsement or an audit. A listing may be removed on a valid
+        complaint or at the maintainer's discretion. For anything involving the app's
+        own conduct (data handling, billing, malware) you may also need to contact the
+        author and the platform actually distributing it.
+  - type: input
+    id: app
+    attributes:
+      label: App name
+      description: The name of the app as it appears on the directory.
+      placeholder: Night Owl
+    validations:
+      required: true
+  - type: input
+    id: url
+    attributes:
+      label: App link
+      description: The link shown on the listing.
+      placeholder: https://apps.apple.com/app/night-owl
+    validations:
+      required: true
+  - type: dropdown
+    id: reason
+    attributes:
+      label: Reason for the report
+      options:
+        - Malware, undisclosed telemetry, or ad injection
+        - Asks for station admin credentials / harvests credentials
+        - Copyright, trademark, or other rights complaint
+        - Misleading listing (paid or closed-source not disclosed, does not work)
+        - App is broken, abandoned, or the link is dead
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: details
+    attributes:
+      label: Details
+      description: >
+        What's the problem? Be specific — what did you observe, and where. For a rights
+        complaint, identify the work(s) and the rights you hold or represent.
+      placeholder: e.g. On first launch the app asks for the station's admin username and password and posts them to its own server.
+    validations:
+      required: true
+  - type: input
+    id: contact
+    attributes:
+      label: Contact (optional)
+      description: An email or handle we can reach you at if we need to follow up. Leave blank to stay anonymous.
+      placeholder: you@example.com
+    validations:
+      required: false
+  - type: checkboxes
+    id: confirm
+    attributes:
+      label: Before you submit
+      options:
+        - label: The information in this report is accurate to the best of my knowledge and I'm acting in good faith.
+          required: true
+        - label: I understand SUB/WAVE lists apps built by third parties and does not publish or audit them.
+          required: true

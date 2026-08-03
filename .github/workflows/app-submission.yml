@@ -1,0 +1,233 @@
+name: App submission → PR
+
+# Turns a "🧰 Submit an app" issue (see .github/ISSUE_TEMPLATE/add-app.yml) into
+# a one-file pull request against main — so people can list what they built
+# WITHOUT forking the repo or hand-writing JSON. A maintainer then reviews and
+# merges the generated PR; it lands in the /apps directory on merge.
+#
+# Security: the issue body is UNTRUSTED user input. It is parsed and written to
+# a file entirely inside actions/github-script via the REST API (Buffer/base64,
+# createOrUpdateFileContents) — it is NEVER interpolated into a shell `run:`
+# step, so there is no command-injection surface. The only file this workflow
+# can write is apps/<slug>.json (slug is sanitised to [a-z0-9-]). PRs opened by
+# GITHUB_TOKEN don't re-trigger pull_request workflows, which is fine here — the
+# content is generated, and lint runs on the push to main after merge.
+#
+# This workflow validates everything scripts/build-catalog.mjs validates (type
+# membership, URL schemes, the image host allowlist, field bounds). That is
+# deliberate duplication: the builder is the authority and fails CI, but a
+# submitter who gets a clear comment on their own issue can fix it themselves,
+# where a red X on a bot-authored PR is a maintainer's problem. Keep the two in
+# lockstep.
+
+# NOTE: the `app-submission` label MUST exist as a repo label, otherwise GitHub
+# silently drops it from the issue template and the `if:` guard below never
+# matches (every run shows "skipped"). `labeled` is included so a maintainer can
+# re-trigger a stuck submission by re-applying the label.
+on:
+  issues:
+    types: [opened, edited, labeled]
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+concurrency:
+  # Serialise per-issue so rapid edits don't race on the same branch.
+  group: app-submission-${{ github.event.issue.number }}
+  cancel-in-progress: false
+
+jobs:
+  build-pr:
+    name: Build app PR from issue
+    runs-on: ubuntu-latest
+    # Only act on issues opened through the app-submission form.
+    if: contains(join(github.event.issue.labels.*.name, ','), 'app-submission')
+    steps:
+      - uses: actions/github-script@v7
+        with:
+          script: |
+            const issue = context.payload.issue;
+            const { owner, repo } = context.repo;
+            const BASE = 'main';
+            const DIR = 'apps';
+
+            // Mirrors scripts/build-catalog.mjs — keep in lockstep.
+            const APP_TYPES = ['mobile', 'web', 'desktop', 'terminal', 'bot', 'integration'];
+            const APP_IMAGE_HOSTS = ['raw.githubusercontent.com', 'user-images.githubusercontent.com', 'github.com'];
+
+            // --- 1. Parse the issue-form body into a { heading: value } map ---
+            // GitHub renders each form field as "### <label>\n\n<value>", with
+            // multi-line values (textareas) spanning several lines. Empty
+            // optional fields render as "_No response_". Walk line-by-line so a
+            // multi-line description isn't truncated.
+            const body = issue.body || '';
+            const fields = {};
+            let curKey = null, buf = [];
+            const flush = () => {
+              if (curKey === null) return;
+              let v = buf.join('\n').trim();
+              if (v === '_No response_') v = '';
+              fields[curKey] = v;
+            };
+            for (const line of body.split(/\r?\n/)) {
+              const h = line.match(/^###\s+(.+?)\s*$/);
+              if (h) { flush(); curKey = h[1].trim(); buf = []; }
+              else if (curKey !== null) { buf.push(line); }
+            }
+            flush();
+            const get = (label) => (fields[label] || '').trim();
+
+            const name = get('App name');
+            const url = get('Link').replace(/\/+$/, '');
+            // The dropdown renders its whole option line ("mobile — iOS / Android
+            // / ..."), so take the leading token rather than the raw value.
+            const typeRaw = get('Type');
+            const type = APP_TYPES.find((t) => typeRaw === t || typeRaw.startsWith(`${t} `)) || '';
+            const description = get('Description');
+            const author = get('Author');
+            const platformsRaw = get('Platforms');
+            const repoUrl = get('Source repository').replace(/\/+$/, '');
+            const icon = get('Icon URL');
+            const screenshot = get('Screenshot URL');
+
+            // --- 2. Validate ---
+            const problems = [];
+            const isHttpUrl = (v) => {
+              try { const u = new URL(v); return u.protocol === 'http:' || u.protocol === 'https:'; }
+              catch { return false; }
+            };
+            const checkImage = (v, field) => {
+              if (!v) return '';
+              let u;
+              try { u = new URL(v); }
+              catch { problems.push(`**${field}** is not a valid URL.`); return ''; }
+              if (u.protocol !== 'https:') { problems.push(`**${field}** must be an \`https://\` URL.`); return ''; }
+              if (!APP_IMAGE_HOSTS.includes(u.host)) {
+                problems.push(
+                  `**${field}** is hosted on \`${u.host}\`, which isn't allowed. ` +
+                  `Use one of: ${APP_IMAGE_HOSTS.map((h) => `\`${h}\``).join(', ')} — ` +
+                  `the simplest route is to commit the image to your repo and paste its "raw" link.`,
+                );
+                return '';
+              }
+              return v;
+            };
+
+            if (!name) problems.push('**App name** is required.');
+            if (!url) problems.push('**Link** is required.');
+            else if (!isHttpUrl(url)) problems.push('**Link** must start with `http://` or `https://`.');
+            if (!type) problems.push(`**Type** must be one of: ${APP_TYPES.join(', ')}.`);
+            if (repoUrl && !isHttpUrl(repoUrl))
+              problems.push('**Source repository** must start with `http://` or `https://`.');
+            if (description.length > 280)
+              problems.push(`**Description** must be 280 characters or fewer (yours is ${description.length}).`);
+            const iconUrl = checkImage(icon, 'Icon URL');
+            const shotUrl = checkImage(screenshot, 'Screenshot URL');
+
+            const fail = async (lines) => {
+              await github.rest.issues.createComment({
+                owner, repo, issue_number: issue.number,
+                body: `⚠️ I couldn't build a pull request from this submission:\n\n` +
+                  lines.map((l) => `- ${l}`).join('\n') +
+                  `\n\nEdit the issue to fix it and I'll try again automatically.`,
+              });
+              await github.rest.issues.addLabels({
+                owner, repo, issue_number: issue.number, labels: ['needs-info'],
+              }).catch(() => {});
+            };
+
+            if (problems.length) { await fail(problems); return; }
+
+            // --- 3. Build the slug + app JSON ---
+            const slug = name.toLowerCase()
+              .replace(/[^a-z0-9]+/g, '-')
+              .replace(/^-+|-+$/g, '')
+              .slice(0, 48) || `app-${issue.number}`;
+
+            const platforms = platformsRaw
+              .split(',').map((p) => p.trim()).filter(Boolean)
+              .map((p) => p.slice(0, 24)).slice(0, 6);
+
+            const app = { name, url, type };
+            if (description) app.description = description;
+            if (author) app.author = author.slice(0, 60);
+            if (platforms.length) app.platforms = platforms;
+            if (repoUrl) app.repo = repoUrl;
+            if (iconUrl) app.icon = iconUrl;
+            if (shotUrl) app.screenshot = shotUrl;
+            app.featured = false;
+            app.submitted = new Date(issue.created_at).toISOString().slice(0, 10);
+
+            const filePath = `${DIR}/${slug}.json`;
+            const content = JSON.stringify(app, null, 2) + '\n';
+            const contentB64 = Buffer.from(content, 'utf8').toString('base64');
+
+            // --- 4. Ensure a branch off main ---
+            const branch = `app/${slug}`;
+            const baseRef = await github.rest.git.getRef({
+              owner, repo, ref: `heads/${BASE}`,
+            });
+            const baseSha = baseRef.data.object.sha;
+            try {
+              await github.rest.git.createRef({
+                owner, repo, ref: `refs/heads/${branch}`, sha: baseSha,
+              });
+            } catch (e) {
+              if (e.status !== 422) throw e; // 422 = branch already exists (edited issue)
+            }
+
+            // --- 5. Write/refresh the app file on that branch ---
+            let existingSha;
+            try {
+              const existing = await github.rest.repos.getContent({
+                owner, repo, path: filePath, ref: branch,
+              });
+              existingSha = existing.data.sha;
+            } catch (e) {
+              if (e.status !== 404) throw e;
+            }
+            await github.rest.repos.createOrUpdateFileContents({
+              owner, repo, path: filePath, branch,
+              message: `feat(apps): add ${name} (from #${issue.number})`,
+              content: contentB64,
+              ...(existingSha ? { sha: existingSha } : {}),
+            });
+
+            // --- 6. Open the PR (or reuse the existing one) ---
+            const open = await github.rest.pulls.list({
+              owner, repo, state: 'open', head: `${owner}:${branch}`,
+            });
+            let pr = open.data[0];
+            const prBody =
+              `Adds **${name}** (${type}) to the [apps directory](${url}).\n\n` +
+              `Generated automatically from #${issue.number}. Closes #${issue.number}.\n\n` +
+              '```json\n' + content + '```\n';
+            if (!pr) {
+              const created = await github.rest.pulls.create({
+                owner, repo, base: BASE, head: branch,
+                title: `feat(apps): add ${name}`,
+                body: prBody,
+              });
+              pr = created.data;
+              await github.rest.issues.addLabels({
+                owner, repo, issue_number: pr.number, labels: ['apps'],
+              }).catch(() => {});
+            } else {
+              await github.rest.pulls.update({
+                owner, repo, pull_number: pr.number, body: prBody,
+              });
+            }
+
+            // --- 7. Tell the contributor ---
+            await github.rest.issues.removeLabel({
+              owner, repo, issue_number: issue.number, name: 'needs-info',
+            }).catch(() => {});
+            await github.rest.issues.createComment({
+              owner, repo, issue_number: issue.number,
+              body: `✅ Opened ${pr.html_url} with your app at \`${filePath}\`.\n\n` +
+                `A maintainer will review and merge it — your app appears on the ` +
+                `directory on the next deploy. Need to change something? Just edit this ` +
+                `issue and the PR updates automatically.`,
+            });

@@ -1,0 +1,11 @@
+{
+  "name": "SUB/WAVE MCP Server",
+  "url": "https://github.com/perminder-klair/subwave/tree/main/mcp-subwave",
+  "type": "integration",
+  "description": "A standalone stdio MCP server for a SUB/WAVE station — the local-only alternative to the controller's built-in HTTP MCP endpoint. Drive the booth from any MCP client.",
+  "author": "@perminder-klair",
+  "platforms": ["MCP", "Claude Desktop", "Claude Code"],
+  "repo": "https://github.com/perminder-klair/subwave/tree/main/mcp-subwave",
+  "featured": false,
+  "submitted": "2026-08-03"
+}
