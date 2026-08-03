@@ -1,0 +1,11 @@
+{
+  "name": "Pico SUB/WAVE",
+  "url": "https://github.com/getsubwave/pico-subwave",
+  "type": "integration",
+  "description": "A desk mini player on a Raspberry Pi Pico 2 W — now playing on the LCD, plus up-next, track info and a physical skip button. Runs MicroPython in a Pimoroni Pico Explorer Base.",
+  "author": "@getsubwave",
+  "platforms": ["Raspberry Pi Pico 2 W", "MicroPython"],
+  "repo": "https://github.com/getsubwave/pico-subwave",
+  "featured": false,
+  "submitted": "2026-08-03"
+}
