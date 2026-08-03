@@ -123,8 +123,10 @@ and `type` are required.
 }
 ```
 
-**Type vocabulary:** `mobile, web, desktop, terminal, bot, integration`. `integration` is the
-catch-all — MCP servers, Home Assistant, hardware, libraries.
+**Type vocabulary:** `mobile, web, desktop, terminal, bot, skin, integration`. `integration` is
+the catch-all — MCP servers, Home Assistant, hardware, libraries. `skin` is a player face for
+the web player; skins are built into the web app rather than installed by a running station, so
+the entry points at source (see [`apps/README.md`](apps/README.md)).
 
 **Image hosts:** `icon` and `screenshot` must be `https://` on `raw.githubusercontent.com`,
 `user-images.githubusercontent.com`, or `github.com`. Anything else fails the build — the website
