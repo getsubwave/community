@@ -31,8 +31,14 @@ const SHOW_ENERGY = ['low', 'medium', 'high'];
 
 // Apps are third-party clients + integrations built against a station's API.
 // One bucket each; `integration` is deliberately a catch-all (MCP servers, Home
-// Assistant, hardware, libraries) rather than three chips holding one entry.
-const APP_TYPES = ['mobile', 'web', 'desktop', 'terminal', 'bot', 'integration'];
+// Assistant, hardware, libraries) rather than several chips holding one entry,
+// and stays last for that reason.
+//
+// `skin` is a player face for the web app rather than a standalone client.
+// Skins are a compile-time registry of in-repo components with no runtime
+// install path, so a listed skin is source an operator builds into their own
+// deployment — a pointer, which is all this directory ever offers.
+const APP_TYPES = ['mobile', 'web', 'desktop', 'terminal', 'bot', 'skin', 'integration'];
 
 // App icons/screenshots are submitter-hosted URLs, so the host is a trust
 // boundary: an arbitrary host means listener browsers fetching from anywhere and

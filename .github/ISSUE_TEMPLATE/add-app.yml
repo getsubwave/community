@@ -32,13 +32,18 @@ body:
     id: type
     attributes:
       label: Type
-      description: Pick the closest fit. Anything that doesn't match the first five is an integration.
+      description: >
+        Pick the closest fit; anything that doesn't match a named bucket is an integration.
+        Choose "skin" for a player face for the SUB/WAVE web player — note skins are built
+        into the web app rather than installed by a running station, so link the source and
+        say how to drop it in.
       options:
         - mobile — iOS / Android / cross-platform handset app
         - web — alternative web player, embed, or hosted front-end
         - desktop — macOS / Windows / Linux client, menubar or tray app
         - terminal — TUI or CLI
         - bot — Discord / Telegram / Slack / Matrix bot
+        - skin — a player face / theme for the SUB/WAVE web player
         - integration — MCP server, Home Assistant, hardware, library or SDK
     validations:
       required: true

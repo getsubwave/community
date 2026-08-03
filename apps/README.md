@@ -68,10 +68,20 @@ review or revert.
 | `desktop`     | macOS / Windows / Linux clients, menubar and tray apps |
 | `terminal`    | TUIs and CLIs |
 | `bot`         | Discord / Telegram / Slack / Matrix bots |
+| `skin`        | A player face for the SUB/WAVE web player |
 | `integration` | Everything else that wires a station into another system — MCP servers, Home Assistant, hardware builds, libraries and SDKs |
 
-`integration` is deliberately broad. If your app doesn't obviously fit one of the
-first five, it goes here.
+`integration` is deliberately broad. If your app doesn't obviously fit a named
+bucket, it goes here.
+
+### A note on skins
+
+Skins are **built into the web app**, not installed by a running station — the player
+resolves its face from a compile-time registry (`web/components/skins/index.ts`), so
+there's no admin button that pulls one in. Listing a skin here is a pointer to its
+source: link the repo, and make sure that repo says how to drop the skin into a
+deployment and register it. That's the same deal as every other entry in this
+directory — we point at what you built, we don't ship it.
 
 ### Images
 
