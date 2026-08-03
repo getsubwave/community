@@ -12,6 +12,7 @@ on:
       - 'personas/**'
       - 'shows/**'
       - 'stations/**'
+      - 'apps/**'
       - 'scripts/build-catalog.mjs'
 
 permissions:

@@ -1,8 +1,13 @@
 #!/usr/bin/env node
 // Build catalog.json — the single published index SUB/WAVE stations fetch live
-// (controller/src/community/registry.ts). Walks the four content dirs, parses
+// (controller/src/community/registry.ts). Walks the five content dirs, parses
 // each entry, and emits one JSON index at the repo root. Zero dependencies
 // (Node built-ins only) so CI needs no install step.
+//
+// `apps` is the odd one out: it is NOT installable into a station — the
+// controller's registry picks only skills/personas/shows/stations off this index
+// and ignores the rest. Apps exist for the public /apps directory on the website
+// (web/lib/apps.ts), which is why their validation lives here and nowhere else.
 //
 //   node scripts/build-catalog.mjs           # write catalog.json
 //   node scripts/build-catalog.mjs --check    # validate only; exit 1 on any error
@@ -23,6 +28,20 @@ const FREQUENCIES = ['silent', 'quiet', 'moderate', 'chatty', 'aggressive'];
 const SCRIPT_LENGTHS = ['one-liner', 'concise', 'extended', 'storyteller'];
 const SHOW_MOODS = ['energetic', 'calm', 'reflective', 'celebratory', 'romantic', 'spiritual', 'focus', 'workout', 'driving', 'cooking', 'rainy', 'sunny', 'night', 'morning', 'evening', 'festival', 'cultural'];
 const SHOW_ENERGY = ['low', 'medium', 'high'];
+
+// Apps are third-party clients + integrations built against a station's API.
+// One bucket each; `integration` is deliberately a catch-all (MCP servers, Home
+// Assistant, hardware, libraries) rather than three chips holding one entry.
+const APP_TYPES = ['mobile', 'web', 'desktop', 'terminal', 'bot', 'integration'];
+
+// App icons/screenshots are submitter-hosted URLs, so the host is a trust
+// boundary: an arbitrary host means listener browsers fetching from anywhere and
+// an image that can be swapped to anything after review. Restrict to GitHub-owned
+// hosts, which is where a project's own assets already live. This list MUST stay
+// in lockstep with web/next.config.js `images.remotePatterns` and the re-check in
+// web/lib/apps.ts — the web tier renders these through next/image, which refuses
+// any host not in remotePatterns.
+const APP_IMAGE_HOSTS = ['raw.githubusercontent.com', 'user-images.githubusercontent.com', 'github.com'];
 
 const errors = [];
 const fail = (where, msg) => errors.push(`${where}: ${msg}`);
@@ -201,17 +220,84 @@ async function buildStations() {
   return out;
 }
 
+// Apps validate harder than stations (which are name+url pass-through): `type`
+// drives the directory's filter chips, and the image URLs are a trust boundary,
+// so both fail the build rather than reaching the site.
+function isHttpUrl(v) {
+  try { const u = new URL(v); return u.protocol === 'http:' || u.protocol === 'https:'; }
+  catch { return false; }
+}
+function appImageUrl(v, field, where) {
+  if (v == null || v === '') return undefined;
+  const s = String(v).trim();
+  let u;
+  try { u = new URL(s); } catch { fail(where, `${field} "${s}" is not a valid URL`); return undefined; }
+  if (u.protocol !== 'https:') { fail(where, `${field} must be https://`); return undefined; }
+  if (!APP_IMAGE_HOSTS.includes(u.host)) {
+    fail(where, `${field} host "${u.host}" not allowed — use one of ${APP_IMAGE_HOSTS.join(', ')}`);
+    return undefined;
+  }
+  return s;
+}
+
+async function buildApps() {
+  const out = [];
+  for (const file of await listFiles(join(ROOT, 'apps'), '.json')) {
+    const slug = basename(file, '.json');
+    const where = `apps/${file}`;
+    if (!SLUG_RE.test(slug)) { fail(where, 'slug (filename) must match /^[a-z0-9][a-z0-9-]{0,48}$/'); continue; }
+    let json;
+    try { json = JSON.parse(await readFile(join(ROOT, 'apps', file), 'utf8')); }
+    catch (e) { fail(where, `invalid JSON: ${e.message}`); continue; }
+    if (!json || typeof json !== 'object' || Array.isArray(json)) { fail(where, 'must be a JSON object'); continue; }
+
+    const name = String(json.name ?? '').trim();
+    const url = String(json.url ?? '').trim();
+    const type = String(json.type ?? '').trim();
+    if (!name) fail(where, 'name is required');
+    if (!url) fail(where, 'url is required');
+    else if (!isHttpUrl(url)) fail(where, `url "${url}" must start with http:// or https://`);
+    if (!type) fail(where, 'type is required');
+    else if (!APP_TYPES.includes(type)) fail(where, `type "${type}" not in ${APP_TYPES.join('|')}`);
+
+    const repo = json.repo ? String(json.repo).trim() : '';
+    if (repo && !isHttpUrl(repo)) fail(where, `repo "${repo}" must start with http:// or https://`);
+
+    const description = String(json.description ?? '').trim();
+    if (description.length > 280) fail(where, `description must be <=280 chars (is ${description.length})`);
+
+    const platforms = (Array.isArray(json.platforms) ? json.platforms : commaList(json.platforms))
+      .map(p => String(p).trim()).filter(Boolean).map(p => p.slice(0, 24)).slice(0, 6);
+
+    out.push(clean({
+      slug,
+      name,
+      url,
+      type,
+      description: description || undefined,
+      author: json.author ? String(json.author).trim().slice(0, 60) : undefined,
+      platforms: platforms.length ? platforms : undefined,
+      repo: repo || undefined,
+      icon: appImageUrl(json.icon, 'icon', where),
+      screenshot: appImageUrl(json.screenshot, 'screenshot', where),
+      featured: json.featured === true,
+      submitted: json.submitted ? String(json.submitted).trim() : undefined,
+    }));
+  }
+  return out;
+}
+
 async function main() {
-  const [skills, personas, shows, stations] = await Promise.all([
-    buildSkills(), buildPersonas(), buildShows(), buildStations(),
+  const [skills, personas, shows, stations, apps] = await Promise.all([
+    buildSkills(), buildPersonas(), buildShows(), buildStations(), buildApps(),
   ]);
   if (errors.length) {
     console.error(`✖ ${errors.length} catalog problem(s):`);
     for (const e of errors) console.error(`  - ${e}`);
     process.exit(1);
   }
-  const catalog = { version: 1, generatedAt: new Date().toISOString(), skills, personas, shows, stations };
-  const counts = `skills=${skills.length} personas=${personas.length} shows=${shows.length} stations=${stations.length}`;
+  const catalog = { version: 1, generatedAt: new Date().toISOString(), skills, personas, shows, stations, apps };
+  const counts = `skills=${skills.length} personas=${personas.length} shows=${shows.length} stations=${stations.length} apps=${apps.length}`;
   if (CHECK) {
     console.log(`✓ catalog valid (${counts})`);
     return;

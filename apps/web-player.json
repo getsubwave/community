@@ -1,0 +1,11 @@
+{
+  "name": "SUB/WAVE Web Player",
+  "url": "https://getsubwave.github.io/web-player/",
+  "type": "web",
+  "description": "A lean, forkable reference web player for a SUB/WAVE station — clone, restyle, deploy. Splits data from presentation so you can rebuild the face without touching the wiring.",
+  "author": "@getsubwave",
+  "platforms": ["Web"],
+  "repo": "https://github.com/getsubwave/web-player",
+  "featured": false,
+  "submitted": "2026-08-03"
+}
