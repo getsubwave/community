@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-08-03T21:27:00.259Z",
+  "generatedAt": "2026-08-04T19:54:53.157Z",
   "skills": [
     {
       "slug": "commute-check-in",
@@ -432,6 +432,21 @@
       "repo": "https://github.com/perminder-klair/subwave/tree/main/mcp-subwave",
       "featured": false,
       "submitted": "2026-08-03"
+    },
+    {
+      "slug": "subwave-tune",
+      "name": "subwave-tune",
+      "url": "https://github.com/nylanalyn/subwave-tune",
+      "type": "terminal",
+      "description": "A terminal radio for SUB/WAVE. It plays the station through mpv while showing the current track, live DJ and show, spoken Booth text, track-selection reasoning, queue, and history.",
+      "author": "@nylanalyn",
+      "platforms": [
+        "Linux"
+      ],
+      "repo": "https://github.com/nylanalyn/subwave-tune",
+      "icon": "https://raw.githubusercontent.com/nylanalyn/subwave-tune/refs/heads/main/icon/icon.png",
+      "featured": false,
+      "submitted": "2026-08-04"
     },
     {
       "slug": "web-player",
