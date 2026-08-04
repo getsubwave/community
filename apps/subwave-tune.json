@@ -1,0 +1,14 @@
+{
+  "name": "subwave-tune",
+  "url": "https://github.com/nylanalyn/subwave-tune",
+  "type": "terminal",
+  "description": "A terminal radio for [SUB/WAVE](https://github.com/perminder-klair/subwave). It plays the station through mpv while showing the current track, live DJ and show, spoken Booth text, track-selection reasoning, queue, and history.",
+  "author": "@nylanalyn",
+  "platforms": [
+    "linux"
+  ],
+  "repo": "https://github.com/nylanalyn/subwave-tune",
+  "icon": "https://raw.githubusercontent.com/nylanalyn/subwave-tune/refs/heads/main/icon/icon.png",
+  "featured": false,
+  "submitted": "2026-08-04"
+}
