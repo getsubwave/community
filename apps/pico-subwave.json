@@ -6,6 +6,7 @@
   "author": "@getsubwave",
   "platforms": ["Raspberry Pi Pico 2 W", "MicroPython"],
   "repo": "https://github.com/getsubwave/pico-subwave",
+  "icon": "https://raw.githubusercontent.com/getsubwave/community/main/apps/assets/pico-subwave.png",
   "featured": false,
   "submitted": "2026-08-03"
 }

@@ -6,6 +6,7 @@
   "author": "@getsubwave",
   "platforms": ["macOS", "Windows", "Linux"],
   "repo": "https://github.com/getsubwave/subwave-desktop",
+  "icon": "https://raw.githubusercontent.com/getsubwave/subwave-desktop/main/assets/icon.png",
   "featured": false,
   "submitted": "2026-08-03"
 }

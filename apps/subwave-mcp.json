@@ -6,6 +6,7 @@
   "author": "@perminder-klair",
   "platforms": ["MCP", "Claude Desktop", "Claude Code"],
   "repo": "https://github.com/perminder-klair/subwave/tree/main/mcp-subwave",
+  "icon": "https://raw.githubusercontent.com/getsubwave/community/main/apps/assets/subwave-mcp.png",
   "featured": false,
   "submitted": "2026-08-03"
 }
