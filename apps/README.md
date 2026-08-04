@@ -100,6 +100,10 @@ directly, and a listed image can't be quietly swapped for something else after
 review. The simplest thing that works is to commit the image to your own repo and
 link the `raw.githubusercontent.com` URL.
 
+`assets/` in this folder holds images for the SUB/WAVE-maintained entries only,
+whose "own repo" is this one. Point your entry at your project's repo instead —
+that keeps your artwork yours to update without opening a PR here.
+
 Icons are shown square; screenshots are shown wide (roughly 16:10).
 
 ## Listing rules

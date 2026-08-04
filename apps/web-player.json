@@ -6,6 +6,8 @@
   "author": "@getsubwave",
   "platforms": ["Web"],
   "repo": "https://github.com/getsubwave/web-player",
+  "icon": "https://raw.githubusercontent.com/getsubwave/community/main/apps/assets/web-player.png",
+  "screenshot": "https://raw.githubusercontent.com/getsubwave/community/main/apps/assets/web-player-screenshot.png",
   "featured": false,
   "submitted": "2026-08-03"
 }
