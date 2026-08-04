@@ -1,0 +1,15 @@
+{
+  "name": "RadioTop",
+  "url": "https://github.com/drachenhort/radiotop",
+  "type": "desktop",
+  "description": "Linux Native ICE Player with Subwave API Integration. Windows and MacOS (untested) Versions available",
+  "author": "@drachenhort",
+  "platforms": [
+    "Linux",
+    "Windows"
+  ],
+  "repo": "https://github.com/drachenhort/radiotop",
+  "screenshot": "https://github.com/drachenhort/radiotop/blob/main/assets/screenshots/playing.png",
+  "featured": false,
+  "submitted": "2026-08-04"
+}
