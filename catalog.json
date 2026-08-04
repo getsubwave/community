@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-08-04T20:55:20.393Z",
+  "generatedAt": "2026-08-04T22:42:04.195Z",
   "skills": [
     {
       "slug": "commute-check-in",
@@ -402,6 +402,7 @@
         "MicroPython"
       ],
       "repo": "https://github.com/getsubwave/pico-subwave",
+      "icon": "https://raw.githubusercontent.com/getsubwave/community/main/apps/assets/pico-subwave.png",
       "featured": false,
       "submitted": "2026-08-03"
     },
@@ -435,6 +436,7 @@
         "Linux"
       ],
       "repo": "https://github.com/getsubwave/subwave-desktop",
+      "icon": "https://raw.githubusercontent.com/getsubwave/subwave-desktop/main/assets/icon.png",
       "featured": false,
       "submitted": "2026-08-03"
     },
@@ -451,6 +453,7 @@
         "Claude Code"
       ],
       "repo": "https://github.com/perminder-klair/subwave/tree/main/mcp-subwave",
+      "icon": "https://raw.githubusercontent.com/getsubwave/community/main/apps/assets/subwave-mcp.png",
       "featured": false,
       "submitted": "2026-08-03"
     },
@@ -480,6 +483,8 @@
         "Web"
       ],
       "repo": "https://github.com/getsubwave/web-player",
+      "icon": "https://raw.githubusercontent.com/getsubwave/community/main/apps/assets/web-player.png",
+      "screenshot": "https://raw.githubusercontent.com/getsubwave/community/main/apps/assets/web-player-screenshot.png",
       "featured": false,
       "submitted": "2026-08-03"
     }
