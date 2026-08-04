@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-08-04T20:25:40.326Z",
+  "generatedAt": "2026-08-04T20:55:20.393Z",
   "skills": [
     {
       "slug": "commute-check-in",
@@ -404,6 +404,23 @@
       "repo": "https://github.com/getsubwave/pico-subwave",
       "featured": false,
       "submitted": "2026-08-03"
+    },
+    {
+      "slug": "radiotop",
+      "name": "RadioTop",
+      "url": "https://github.com/drachenhort/radiotop",
+      "type": "desktop",
+      "description": "A slim PySide6 player that follows your system theme. Reads a station's SUB/WAVE API for now playing, the live DJ, BPM/key and what's next, adds MusicBrainz metadata and cover art, and sits in the tray. Also plays plain Icecast/Shoutcast streams.",
+      "author": "@drachenhort",
+      "platforms": [
+        "Linux",
+        "Windows"
+      ],
+      "repo": "https://github.com/drachenhort/radiotop",
+      "icon": "https://raw.githubusercontent.com/drachenhort/radiotop/main/assets/radiotop.png",
+      "screenshot": "https://raw.githubusercontent.com/drachenhort/radiotop/main/assets/screenshots/playing.png",
+      "featured": false,
+      "submitted": "2026-08-04"
     },
     {
       "slug": "subwave-desktop",
