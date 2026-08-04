@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-08-04T19:54:53.157Z",
+  "generatedAt": "2026-08-04T20:25:40.326Z",
   "skills": [
     {
       "slug": "commute-check-in",
@@ -172,6 +172,7 @@
       "energies": [
         "high"
       ],
+      "vocals": "",
       "filtersStrict": false,
       "banter": false,
       "programme": true,
@@ -203,6 +204,7 @@
       "energies": [
         "low"
       ],
+      "vocals": "",
       "filtersStrict": false,
       "banter": false,
       "programme": false,
@@ -233,6 +235,7 @@
         }
       ],
       "energies": [],
+      "vocals": "",
       "filtersStrict": true,
       "banter": false,
       "programme": false,
@@ -262,6 +265,7 @@
         "low",
         "medium"
       ],
+      "vocals": "",
       "filtersStrict": false,
       "banter": false,
       "programme": false,
