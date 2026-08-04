@@ -72,6 +72,7 @@ moods: reflective, night         # each from the mood vocab below, max 6 (option
 genres: shoegaze, dream pop      # free text, ≤64 chars each, max 6 (optional)
 eras: 1988-1999                  # comma list of YYYY or YYYY-YYYY windows, years 1900–2100 (optional)
 energies: low                    # low | medium | high, max 6 (optional)
+vocals: instrumental             # instrumental | vocal — single value, omit for no constraint (optional)
 filtersStrict: false             # true = hard filter instead of a soft lean
 programme: false                 # true = produced-episode mode (intro / feature / outro)
 banter: false                    # true = scripted multi-voice breaks (needs guests, added on install)
@@ -83,6 +84,10 @@ A slow midnight drift for the people still awake…
 **Mood vocabulary:** `energetic, calm, reflective, celebratory, romantic, spiritual, focus,
 workout, driving, cooking, rainy, sunny, night, morning, evening, festival, cultural`.
 **Energy vocabulary:** `low, medium, high`.
+**Vocals vocabulary:** `instrumental, vocal` — one value or nothing, since a show wanting both
+wants neither. It steers on measured vocal detection, which is an opt-in analysis tier on the
+installing station: where it hasn't run, the show plays unconstrained rather than falling silent.
+So treat it as a preference your show expresses, not a guarantee every listener's station can keep.
 
 ## Stations — `stations/<slug>.json`
 

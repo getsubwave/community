@@ -28,6 +28,9 @@ const FREQUENCIES = ['silent', 'quiet', 'moderate', 'chatty', 'aggressive'];
 const SCRIPT_LENGTHS = ['one-liner', 'concise', 'extended', 'storyteller'];
 const SHOW_MOODS = ['energetic', 'calm', 'reflective', 'celebratory', 'romantic', 'spiritual', 'focus', 'workout', 'driving', 'cooking', 'rainy', 'sunny', 'night', 'morning', 'evening', 'festival', 'cultural'];
 const SHOW_ENERGY = ['low', 'medium', 'high'];
+// Scalar where its neighbours are lists — instrumental and vocal are mutually
+// exclusive, and asking for both is asking for neither. '' = no constraint.
+const SHOW_VOCALS = ['instrumental', 'vocal'];
 
 // Apps are third-party clients + integrations built against a station's API.
 // One bucket each; `integration` is deliberately a catch-all (MCP servers, Home
@@ -188,6 +191,8 @@ async function buildShows() {
     for (const m of moods) if (!SHOW_MOODS.includes(m)) fail(where, `mood "${m}" not in ${SHOW_MOODS.join('|')}`);
     const energies = commaList(data.energies).slice(0, 6);
     for (const e of energies) if (!SHOW_ENERGY.includes(e)) fail(where, `energy "${e}" not in ${SHOW_ENERGY.join('|')}`);
+    const vocals = (data.vocals || '').trim();
+    if (vocals && !SHOW_VOCALS.includes(vocals)) fail(where, `vocals "${vocals}" not in ${SHOW_VOCALS.join('|')}`);
     const genres = commaList(data.genres).map(g => g.slice(0, 64)).slice(0, 6);
     const eras = commaList(data.eras).map(t => parseEra(t, where)).filter(Boolean).slice(0, 6);
     const secRaw = data.maxTrackSeconds;
@@ -200,6 +205,7 @@ async function buildShows() {
       genres,
       eras,
       energies: energies.filter(e => SHOW_ENERGY.includes(e)),
+      vocals: SHOW_VOCALS.includes(vocals) ? vocals : '',
       filtersStrict: data.filtersStrict === 'true',
       banter: data.banter === 'true',
       programme: data.programme === 'true',
