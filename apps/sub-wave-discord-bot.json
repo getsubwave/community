@@ -1,0 +1,13 @@
+{
+  "name": "SUB/WAVE Discord Bot",
+  "url": "https://github.com/FoggyMtnDrifter/subwave-discord-bot",
+  "type": "bot",
+  "description": "SUB/WAVE Discord bot: broadcasts your single SUB/WAVE radio station live in a voice channel, shows the current track as its \"Listening to\" status, and takes song requests for the AI DJ — all via slash commands. User- and server-installable, with a drop-in Docker Compose overlay.",
+  "author": "@foggymtndrifter",
+  "platforms": [
+    "Discord"
+  ],
+  "repo": "https://github.com/FoggyMtnDrifter/subwave-discord-bot",
+  "featured": false,
+  "submitted": "2026-08-05"
+}
