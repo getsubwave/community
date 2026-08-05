@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-08-04T22:42:04.195Z",
+  "generatedAt": "2026-08-05T11:06:11.253Z",
   "skills": [
     {
       "slug": "commute-check-in",
@@ -439,6 +439,20 @@
       "icon": "https://raw.githubusercontent.com/getsubwave/subwave-desktop/main/assets/icon.png",
       "featured": false,
       "submitted": "2026-08-03"
+    },
+    {
+      "slug": "subwave-discord-bot",
+      "name": "SUB/WAVE Discord Bot",
+      "url": "https://github.com/FoggyMtnDrifter/subwave-discord-bot",
+      "type": "bot",
+      "description": "Plays your SUB/WAVE station live in a Discord voice channel, shows the current track as the bot's \"Listening to\" status, and takes song requests for the AI DJ — all via slash commands. User- and server-installable, with a drop-in Docker Compose overlay.",
+      "author": "@FoggyMtnDrifter",
+      "platforms": [
+        "Discord"
+      ],
+      "repo": "https://github.com/FoggyMtnDrifter/subwave-discord-bot",
+      "featured": false,
+      "submitted": "2026-08-05"
     },
     {
       "slug": "subwave-mcp",
