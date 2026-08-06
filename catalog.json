@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-08-05T11:06:11.253Z",
+  "generatedAt": "2026-08-06T08:18:31.321Z",
   "skills": [
     {
       "slug": "commute-check-in",
@@ -303,6 +303,20 @@
       "description": "695 artists. One transmitter. Zero adult supervision. Mostly jungle, DnB and dub until the algorithm blinks and it's electro swing, chap hop, or Johnny Cage. The overnight ambient show is legally required cooldown. DnB all night at weekends because sleep is a construct.",
       "featured": false,
       "submitted": "2026-07-07"
+    },
+    {
+      "slug": "echo-fm",
+      "name": "echo fm",
+      "url": "https://echofm.fr",
+      "operator": "nonop",
+      "location": "Marseille, France",
+      "country": "France",
+      "lat": 43.2964336,
+      "lon": 5.3778398,
+      "genre": "french rap / electro&pop",
+      "description": "toujours en direct. du rap, de l'électro, de la pop, des voix indépendantes ou non, echo fm est là pour mettre en avant la diversité et la beauté du son.",
+      "featured": false,
+      "submitted": "2026-08-06"
     },
     {
       "slug": "foggymtndrifter-fm",
