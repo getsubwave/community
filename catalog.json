@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-08-06T08:18:31.321Z",
+  "generatedAt": "2026-08-06T10:41:00.481Z",
   "skills": [
     {
       "slug": "commute-check-in",
@@ -436,6 +436,21 @@
       "screenshot": "https://raw.githubusercontent.com/drachenhort/radiotop/main/assets/screenshots/playing.png",
       "featured": false,
       "submitted": "2026-08-04"
+    },
+    {
+      "slug": "subwave-auto",
+      "name": "SUB/WAVE Auto",
+      "url": "https://github.com/VibrantMode/subwave-auto",
+      "type": "mobile",
+      "description": "Sideloadable Android Auto companion for a SUB/WAVE station — native Kotlin/media3, play/pause with live title, artist and cover art on the car screen. Reads any station's public /stream.mp3 and /api/now-playing, so no server changes and no Play Store needed.",
+      "author": "@VibrantMode",
+      "platforms": [
+        "Android",
+        "Android Auto"
+      ],
+      "repo": "https://github.com/VibrantMode/subwave-auto",
+      "featured": false,
+      "submitted": "2026-08-06"
     },
     {
       "slug": "subwave-desktop",
