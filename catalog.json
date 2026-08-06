@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-08-06T10:41:00.481Z",
+  "generatedAt": "2026-08-06T23:15:48.439Z",
   "skills": [
     {
       "slug": "commute-check-in",
@@ -331,6 +331,20 @@
       "description": "Plays a variety of music that spans all genres and decades. You'll never know what you'll hear next.",
       "featured": false,
       "submitted": "2026-07-19"
+    },
+    {
+      "slug": "juho-station",
+      "name": "Juho Station",
+      "url": "https://radio.julianhofer.com",
+      "operator": "@brokkolioderso",
+      "location": "St. Gallen, Switzerland",
+      "country": "Switzerland",
+      "lat": 47.42391,
+      "lon": 9.37477,
+      "genre": "Global crate-digging and genre-fluid deep cuts",
+      "description": "A 13,000-track archive built for pure discovery. Underground house, experimental electronic, classical and hip-hop, heavy on rare global cuts — 70s Indonesian, 60s Brazilian, Ethio-jazz — that you won't find on the major streaming platforms.",
+      "featured": false,
+      "submitted": "2026-08-07"
     },
     {
       "slug": "klair-radio",
