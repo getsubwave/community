@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-08-06T23:15:48.439Z",
+  "generatedAt": "2026-08-09T06:23:55.937Z",
   "skills": [
     {
       "slug": "commute-check-in",
@@ -317,6 +317,20 @@
       "description": "toujours en direct. du rap, de l'électro, de la pop, des voix indépendantes ou non, echo fm est là pour mettre en avant la diversité et la beauté du son.",
       "featured": false,
       "submitted": "2026-08-06"
+    },
+    {
+      "slug": "equinox-radio",
+      "name": "Equinox Radio",
+      "url": "https://equinoxradio.app/",
+      "operator": "@equinoxau",
+      "location": "Melbourne, Australia",
+      "country": "Australia",
+      "lat": -37.81,
+      "lon": 144.96,
+      "genre": "All Genres",
+      "description": "Eclectic by design, electronic at heart. This station moves freely across genres, but its backbone is a deep, extensive library of Progressive House, Techno, and Trance — surfacing often enough to give the whole mix its own distinct pulse. Whatever else is in rotation, the dance floor is never far away.",
+      "featured": false,
+      "submitted": "2026-08-09"
     },
     {
       "slug": "foggymtndrifter-fm",
