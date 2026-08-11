@@ -3,7 +3,7 @@
   "url": "https://github.com/mrain1p/Wave-TV",
   "type": "mobile",
   "description": "An Android TV and Fire TV player for Sub/Wave stations. A native station picker. Add your stations, change the themes or players, make voice requests from your TV.  Loads exactly as they do in a browser - this is a shell, not a client.",
-  "author": "@mraion1p",
+  "author": "@mrain1p",
   "platforms": [
     "Firestick",
     "Android TV",
