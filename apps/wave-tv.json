@@ -1,0 +1,13 @@
+{
+  "name": "Wave TV",
+  "url": "https://github.com/mrain1p/Wave-TV",
+  "type": "mobile",
+  "description": "An Android TV and Fire TV player for SUB/WAVE stations. A native station picker with a now-playing panel; selecting a station loads that station's own web player fullscreen, driven by the remote — D-pad navigation, song requests by voice, sleep timer.",
+  "author": "@mrain1p",
+  "platforms": ["Android TV", "Fire TV", "Google TV"],
+  "repo": "https://github.com/mrain1p/Wave-TV",
+  "icon": "https://raw.githubusercontent.com/mrain1p/Wave-TV/main/icon.png",
+  "screenshot": "https://raw.githubusercontent.com/mrain1p/Wave-TV/main/docs/picker-light.jpg",
+  "featured": false,
+  "submitted": "2026-08-12"
+}
