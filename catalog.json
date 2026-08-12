@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-08-12T11:14:12.135Z",
+  "generatedAt": "2026-08-12T11:39:53.221Z",
   "skills": [
     {
       "slug": "commute-check-in",
@@ -559,6 +559,7 @@
       ],
       "repo": "https://github.com/getsubwave/subwave-desktop",
       "icon": "https://raw.githubusercontent.com/getsubwave/subwave-desktop/main/assets/icon.png",
+      "screenshot": "https://raw.githubusercontent.com/getsubwave/community/main/apps/assets/subwave-desktop-screenshot.png",
       "featured": false,
       "submitted": "2026-08-03"
     },
