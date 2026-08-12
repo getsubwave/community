@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-08-12T11:09:23.814Z",
+  "generatedAt": "2026-08-12T11:13:35.041Z",
   "skills": [
     {
       "slug": "commute-check-in",
@@ -319,6 +319,20 @@
       "description": "695 artists. One transmitter. Zero adult supervision. Mostly jungle, DnB and dub until the algorithm blinks and it's electro swing, chap hop, or Johnny Cage. The overnight ambient show is legally required cooldown. DnB all night at weekends because sleep is a construct.",
       "featured": false,
       "submitted": "2026-07-07"
+    },
+    {
+      "slug": "chillwave-radio",
+      "name": "Chillwave Radio",
+      "url": "https://radio.rklab.co.in/",
+      "operator": "@1ramkrishnan",
+      "location": "Navimumbai, India",
+      "country": "India",
+      "lat": 19.03681,
+      "lon": 73.01582,
+      "genre": "synthwave / bollywood / ambient",
+      "description": "Neon-lit synthwave and Bollywood nostalgia in the same rotation, drifting into ambient once the hour gets late. Run out of Navi Mumbai by rklab.",
+      "featured": false,
+      "submitted": "2026-08-10"
     },
     {
       "slug": "echo-fm",
