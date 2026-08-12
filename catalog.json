@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-08-12T11:13:35.041Z",
+  "generatedAt": "2026-08-12T11:14:12.135Z",
   "skills": [
     {
       "slug": "commute-check-in",
@@ -260,6 +260,41 @@
       "submittedBy": "mrg358",
       "dateAdded": "2026-07-19",
       "dateModified": "2026-07-19"
+    },
+    {
+      "slug": "side-two",
+      "name": "Side Two",
+      "topic": "Forty years of records, 1980 to 2020, and almost none of the songs people know. Side twos, album tracks, the single that never was.\n\nDeep cut is the hard constraint: given a known track at the right tempo or an unknown one slightly off it, play the unknown one. If an artist has no deep cut to hand, move on rather than digging.\n\nEnergy sits mid and stays there — momentum, not impact. Celebratory, but the warmth of a good night, not the noise of one.\n\nOne pool, not seven segments. Punk into hip-hop into country is the show working; don't block genres into runs or walk the decades in order. Pulse and attitude hold the hour, not category.\n\nLinks: tease, then reveal. What it is, where it sat on the record, why it never got out. One good fact beats three.\n\nAvoid: ballads, live versions, remixes, radio edits, skits, interludes, anything under 90 seconds, Christmas, novelty.",
+      "moods": [
+        "energetic",
+        "celebratory"
+      ],
+      "genres": [
+        "Pop",
+        "Rock",
+        "Alternative & Punk",
+        "Alternative Rock",
+        "Country",
+        "Rap"
+      ],
+      "eras": [
+        {
+          "fromYear": 1980,
+          "toYear": 2020
+        }
+      ],
+      "energies": [
+        "medium"
+      ],
+      "vocals": "",
+      "filtersStrict": false,
+      "banter": false,
+      "programme": true,
+      "segmentSkill": "library-deep-cut",
+      "maxTrackSeconds": null,
+      "submittedBy": "joyUnbounded",
+      "dateAdded": "2026-08-11",
+      "dateModified": "2026-08-12"
     },
     {
       "slug": "sunrise-service",
