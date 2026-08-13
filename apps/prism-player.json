@@ -1,0 +1,16 @@
+{
+  "name": "Prism Player",
+  "url": "https://primsplayer.app",
+  "type": "desktop",
+  "description": "Prism Player is a music player for your Navidrome-compatible server, with built-in, native Sub/Wave support for your personal radio station. Available on MacOS and Windows.",
+  "author": "@kylejschultz",
+  "platforms": [
+    "Windows",
+    "MacOS"
+  ],
+  "repo": "https://github.com/kylejschultz/prism-player",
+  "icon": "https://raw.githubusercontent.com/kylejschultz/prism-player/dev/src-tauri/icons/icon.svg",
+  "screenshot": "https://raw.githubusercontent.com/kylejschultz/prism-player/refs/heads/dev/docs/images/subwave-radio.png",
+  "featured": false,
+  "submitted": "2026-08-13"
+}
