@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-08-12T11:39:53.221Z",
+  "generatedAt": "2026-08-17T16:25:47.363Z",
   "skills": [
     {
       "slug": "commute-check-in",
@@ -512,6 +512,23 @@
       "icon": "https://raw.githubusercontent.com/getsubwave/community/main/apps/assets/pico-subwave.png",
       "featured": false,
       "submitted": "2026-08-03"
+    },
+    {
+      "slug": "prism-player",
+      "name": "Prism Player",
+      "url": "https://github.com/kylejschultz/prism-player",
+      "type": "desktop",
+      "description": "A music player for your Navidrome-compatible server, with built-in native SUB/WAVE support for your personal radio station.",
+      "author": "@kylejschultz",
+      "platforms": [
+        "macOS",
+        "Windows"
+      ],
+      "repo": "https://github.com/kylejschultz/prism-player",
+      "icon": "https://raw.githubusercontent.com/kylejschultz/prism-player/dev/src-tauri/icons/icon.png",
+      "screenshot": "https://raw.githubusercontent.com/kylejschultz/prism-player/dev/docs/images/subwave-radio.png",
+      "featured": false,
+      "submitted": "2026-08-17"
     },
     {
       "slug": "radiotop",
