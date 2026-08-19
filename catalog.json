@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-08-19T09:32:43.835Z",
+  "generatedAt": "2026-08-19T09:36:47.684Z",
   "skills": [
     {
       "slug": "commute-check-in",
@@ -625,6 +625,24 @@
       "icon": "https://raw.githubusercontent.com/nylanalyn/subwave-tune/refs/heads/main/icon/icon.png",
       "featured": false,
       "submitted": "2026-08-04"
+    },
+    {
+      "slug": "talk-wave",
+      "name": "Talk-Wave",
+      "url": "https://github.com/mrain1p/Talk-Wave",
+      "type": "integration",
+      "description": "A live phone with a direct line into your SUB/WAVE. Call, text, or leave voicemails delivered straight to the booth. Talk with your DJ or make music requests, off air or live on the broadcast. Features a built-in music player and PWA that installs like an app and embeds anywhere.",
+      "author": "@mrain1p",
+      "platforms": [
+        "Windows",
+        "Linux",
+        "Progressive Web-App (PWA)"
+      ],
+      "repo": "https://github.com/mrain1p/Talk-Wave",
+      "icon": "https://raw.githubusercontent.com/mrain1p/Talk-Wave/main/web-widget/icon-192.png",
+      "screenshot": "https://raw.githubusercontent.com/mrain1p/Talk-Wave/main/docs/call-desktop.png",
+      "featured": false,
+      "submitted": "2026-08-19"
     },
     {
       "slug": "wave-tv",
