@@ -51,6 +51,8 @@ const APP_TYPES = ['mobile', 'web', 'desktop', 'terminal', 'bot', 'skin', 'integ
 // web/lib/apps.ts — the web tier renders these through next/image, which refuses
 // any host not in remotePatterns.
 const APP_IMAGE_HOSTS = ['raw.githubusercontent.com', 'user-images.githubusercontent.com', 'github.com'];
+const MAX_PLATFORM_LEN = 32;
+const MAX_PLATFORMS = 6;
 
 const errors = [];
 const fail = (where, msg) => errors.push(`${where}: ${msg}`);
@@ -245,6 +247,10 @@ function appImageUrl(v, field, where) {
   let u;
   try { u = new URL(s); } catch { fail(where, `${field} "${s}" is not a valid URL`); return undefined; }
   if (u.protocol !== 'https:') { fail(where, `${field} must be https://`); return undefined; }
+  // A /blob/ link renders an HTML page, not the image. Normalise it to the raw
+  // host so a hand-written JSON doesn't ship a broken <img> to the site.
+  const blob = s.match(/^https:\/\/github\.com\/([^/]+)\/([^/]+)\/blob\/(.+)$/);
+  if (blob) return `https://raw.githubusercontent.com/${blob[1]}/${blob[2]}/${blob[3]}`;
   if (!APP_IMAGE_HOSTS.includes(u.host)) {
     fail(where, `${field} host "${u.host}" not allowed — use one of ${APP_IMAGE_HOSTS.join(', ')}`);
     return undefined;
@@ -279,7 +285,7 @@ async function buildApps() {
     if (description.length > 280) fail(where, `description must be <=280 chars (is ${description.length})`);
 
     const platforms = (Array.isArray(json.platforms) ? json.platforms : commaList(json.platforms))
-      .map(p => String(p).trim()).filter(Boolean).map(p => p.slice(0, 24)).slice(0, 6);
+      .map(p => String(p).trim()).filter(Boolean).map(p => p.slice(0, MAX_PLATFORM_LEN)).slice(0, MAX_PLATFORMS);
 
     out.push(clean({
       slug,

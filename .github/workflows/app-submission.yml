@@ -56,6 +56,8 @@ jobs:
             // Mirrors scripts/build-catalog.mjs — keep in lockstep.
             const APP_TYPES = ['mobile', 'web', 'desktop', 'terminal', 'bot', 'integration'];
             const APP_IMAGE_HOSTS = ['raw.githubusercontent.com', 'user-images.githubusercontent.com', 'github.com'];
+            const MAX_PLATFORM_LEN = 32;
+            const MAX_PLATFORMS = 6;
 
             // --- 1. Parse the issue-form body into a { heading: value } map ---
             // GitHub renders each form field as "### <label>\n\n<value>", with
@@ -98,8 +100,17 @@ jobs:
               try { const u = new URL(v); return u.protocol === 'http:' || u.protocol === 'https:'; }
               catch { return false; }
             };
+            // github.com/<owner>/<repo>/blob/<ref>/<path> serves an HTML page, not
+            // the image — it passes the host allowlist but renders as a broken
+            // image on the site. Rewrite it to the raw host rather than bouncing
+            // the submission, since it's the link GitHub's UI hands people.
+            const rawify = (v) => {
+              const m = v.match(/^https:\/\/github\.com\/([^/]+)\/([^/]+)\/blob\/(.+)$/);
+              return m ? `https://raw.githubusercontent.com/${m[1]}/${m[2]}/${m[3]}` : v;
+            };
             const checkImage = (v, field) => {
               if (!v) return '';
+              v = rawify(v);
               let u;
               try { u = new URL(v); }
               catch { problems.push(`**${field}** is not a valid URL.`); return ''; }
@@ -125,6 +136,17 @@ jobs:
               problems.push(`**Description** must be 280 characters or fewer (yours is ${description.length}).`);
             const iconUrl = checkImage(icon, 'Icon URL');
             const shotUrl = checkImage(screenshot, 'Screenshot URL');
+            // Truncating a platform to fit would mangle it ("Progressive Web-App
+            // (PWA)" -> "...(PWA"), so say so instead and let the submitter edit.
+            const platforms = platformsRaw
+              .split(',').map((p) => p.trim()).filter(Boolean).slice(0, MAX_PLATFORMS);
+            for (const p of platforms) {
+              if (p.length > MAX_PLATFORM_LEN)
+                problems.push(
+                  `**Platforms** entry \`${p}\` must be ${MAX_PLATFORM_LEN} characters or fewer ` +
+                  `(it is ${p.length}).`,
+                );
+            }
 
             const fail = async (lines) => {
               await github.rest.issues.createComment({
@@ -145,10 +167,6 @@ jobs:
               .replace(/[^a-z0-9]+/g, '-')
               .replace(/^-+|-+$/g, '')
               .slice(0, 48) || `app-${issue.number}`;
-
-            const platforms = platformsRaw
-              .split(',').map((p) => p.trim()).filter(Boolean)
-              .map((p) => p.slice(0, 24)).slice(0, 6);
 
             const app = { name, url, type };
             if (description) app.description = description;
