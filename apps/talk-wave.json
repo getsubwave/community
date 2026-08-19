@@ -7,11 +7,11 @@
   "platforms": [
     "Windows",
     "Linux",
-    "Progressive Web-App (PWA"
+    "Progressive Web-App (PWA)"
   ],
   "repo": "https://github.com/mrain1p/Talk-Wave",
-  "icon": "https://github.com/mrain1p/Talk-Wave/blob/main/web-widget/icon-192.png",
-  "screenshot": "https://github.com/mrain1p/Talk-Wave/blob/main/docs/call-desktop.png",
+  "icon": "https://raw.githubusercontent.com/mrain1p/Talk-Wave/main/web-widget/icon-192.png",
+  "screenshot": "https://raw.githubusercontent.com/mrain1p/Talk-Wave/main/docs/call-desktop.png",
   "featured": false,
   "submitted": "2026-08-19"
 }
