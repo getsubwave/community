@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-08-19T09:36:47.684Z",
+  "generatedAt": "2026-08-24T10:56:11.527Z",
   "skills": [
     {
       "slug": "commute-check-in",
@@ -438,6 +438,20 @@
       "description": "Punjabi all day — an AI DJ picking the tracks and talking between them.",
       "featured": false,
       "submitted": "2026-07-08"
+    },
+    {
+      "slug": "radio-bartek",
+      "name": "Radio Bartek",
+      "url": "https://radiobartek.com",
+      "operator": "bartek@radiobartek.com",
+      "location": "Krakow, Poland",
+      "country": "Poland",
+      "lat": 50.06222539051627,
+      "lon": 19.891162492230766,
+      "genre": "only cool music",
+      "description": "A young radio station aiming to promote underdogs, losers, and other good alternative artists. Playing more popular music too. We are just starting.",
+      "featured": false,
+      "submitted": "2026-08-23"
     },
     {
       "slug": "radio-parra-vergara",
