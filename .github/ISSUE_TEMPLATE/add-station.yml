@@ -103,6 +103,8 @@ body:
         - Your station may be removed from the directory on a valid complaint or at
           the maintainer's discretion.
         - You'll handle any rights complaints directed at your station.
+        - Your station's name and branding are yours to use — not the name of a
+          book, film, game, TV series or another company's brand.
 
         This isn't legal advice.
   - type: checkboxes
@@ -111,6 +113,8 @@ body:
       label: Before you submit
       options:
         - label: My station URL is public and reachable (visiting it loads the player).
+          required: true
+        - label: My station's name and branding are my own — not taken from a book, film, game, TV series or another company's brand.
           required: true
         - label: I understand a pull request will be opened from this issue and a maintainer will review it.
           required: true
