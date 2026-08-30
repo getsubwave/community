@@ -53,23 +53,27 @@ body:
     id: frequency
     attributes:
       label: Talk frequency
-      description: How often this persona speaks between tracks.
+      description: How often this persona speaks between tracks. Ordered quietest to loudest; silent means they never speak unprompted.
       options:
-        - moderate
+        - silent
         - quiet
+        - moderate
+        - chatty
         - aggressive
-      default: 0
+      default: 2
     validations:
       required: false
   - type: dropdown
     id: script-length
     attributes:
       label: Script length
-      description: Concise is the standard one-to-four sentence segment; extended is roughly double, for storytellers.
+      description: How long a segment runs. One-liner is a single sentence; concise is the standard one-to-four; extended is roughly double; storyteller runs longest.
       options:
+        - one-liner
         - concise
         - extended
-      default: 0
+        - storyteller
+      default: 1
     validations:
       required: false
   - type: dropdown

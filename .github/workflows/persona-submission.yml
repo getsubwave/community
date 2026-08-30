@@ -48,8 +48,12 @@ jobs:
             const DIR = 'personas';
 
             const SLUG_RE = /^[a-z0-9][a-z0-9-]{0,48}$/;
-            const FREQUENCIES = new Set(['quiet', 'moderate', 'aggressive']);
-            const SCRIPT_LENGTHS = new Set(['concise', 'extended']);
+            // Must stay in lockstep with the dropdowns in
+            // .github/ISSUE_TEMPLATE/add-persona.yml and with FREQUENCIES /
+            // SCRIPT_LENGTHS in scripts/build-catalog.mjs — a value the form can
+            // emit but this rejects strands the submitter with no way to proceed.
+            const FREQUENCIES = new Set(['silent', 'quiet', 'moderate', 'chatty', 'aggressive']);
+            const SCRIPT_LENGTHS = new Set(['one-liner', 'concise', 'extended', 'storyteller']);
 
             // --- 1. Parse the issue-form body into a { heading: value } map ---
             // GitHub renders each field as "### <label>\n\n<value>"; empty optional
@@ -105,8 +109,8 @@ jobs:
             if (tagline.length > 80) problems.push('**Tagline** must be at most 80 characters.');
             if (!soul) problems.push('**The soul** is required — it\'s the character prose the DJ speaks from.');
             else if (soul.length > 1000) problems.push(`**The soul** must be at most 1000 characters (currently ${soul.length}).`);
-            if (frequency && !FREQUENCIES.has(frequency)) problems.push('**Talk frequency** must be quiet, moderate, or aggressive.');
-            if (scriptLength && !SCRIPT_LENGTHS.has(scriptLength)) problems.push('**Script length** must be concise or extended.');
+            if (frequency && !FREQUENCIES.has(frequency)) problems.push(`**Talk frequency** must be one of ${[...FREQUENCIES].join(', ')}.`);
+            if (scriptLength && !SCRIPT_LENGTHS.has(scriptLength)) problems.push(`**Script length** must be one of ${[...SCRIPT_LENGTHS].join(', ')}.`);
             if (!humour.ok) problems.push('**Humour dial** must be a whole number 0–10.');
             if (!localColour.ok) problems.push('**Local colour dial** must be a whole number 0–10.');
             if (!warmth.ok) problems.push('**Warmth dial** must be a whole number 0–10.');
