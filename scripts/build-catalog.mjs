@@ -26,6 +26,14 @@ const CHECK = process.argv.includes('--check');
 const SLUG_RE = /^[a-z0-9][a-z0-9-]{0,48}$/;
 const FREQUENCIES = ['silent', 'quiet', 'moderate', 'chatty', 'aggressive'];
 const SCRIPT_LENGTHS = ['one-liner', 'concise', 'extended', 'storyteller'];
+
+// A soul is character prose the station reads as description, not a prompt it
+// forwards to a model — the submission form says so and every hand-authored
+// entry follows it, but LLM-drafted submissions arrive as "You are a ..."
+// almost every time. Anchored to the opening only: mid-body second person is
+// ordinary prose ("talks to you like you're the only one listening") and must
+// not trip this.
+const SECOND_PERSON_RE = /^\s*(you\s+are|you're|act\s+as|roleplay\s+as|pretend\s+(you|to)\b)/i;
 const SHOW_MOODS = ['energetic', 'calm', 'reflective', 'celebratory', 'romantic', 'spiritual', 'focus', 'workout', 'driving', 'cooking', 'rainy', 'sunny', 'night', 'morning', 'evening', 'festival', 'cultural'];
 const SHOW_ENERGY = ['low', 'medium', 'high'];
 // Scalar where its neighbours are lists — instrumental and vocal are mutually
@@ -56,6 +64,12 @@ const MAX_PLATFORMS = 6;
 
 const errors = [];
 const fail = (where, msg) => errors.push(`${where}: ${msg}`);
+
+// Warnings are advisory — they print but never fail the build. Reserved for
+// house-style drift that a human should look at but that the station-side
+// readers cope with fine, so a submission is never blocked on taste alone.
+const warnings = [];
+const warn = (where, msg) => warnings.push(`${where}: ${msg}`);
 
 // Flat-YAML frontmatter parser — identical rules to the controller's
 // parseFrontmatter (skills/loader.ts): a flat key: value block, no nesting.
@@ -140,6 +154,7 @@ async function buildPersonas() {
     if (soul.length > 1000) { fail(where, `soul must be <=1000 chars (is ${soul.length})`); continue; }
     if (data.frequency && !FREQUENCIES.includes(data.frequency)) fail(where, `frequency "${data.frequency}" not in ${FREQUENCIES.join('|')}`);
     if (data.scriptLength && !SCRIPT_LENGTHS.includes(data.scriptLength)) fail(where, `scriptLength "${data.scriptLength}" not in ${SCRIPT_LENGTHS.join('|')}`);
+    if (SECOND_PERSON_RE.test(soul)) warn(where, 'soul opens like a system prompt — write it as third-person character prose (see personas/saffron-am)');
     out.push(clean({
       slug,
       displayName: (data.displayName || slug).trim().slice(0, 40),
@@ -313,6 +328,10 @@ async function main() {
     console.error(`✖ ${errors.length} catalog problem(s):`);
     for (const e of errors) console.error(`  - ${e}`);
     process.exit(1);
+  }
+  if (warnings.length) {
+    console.warn(`⚠ ${warnings.length} style warning(s) — not blocking:`);
+    for (const w of warnings) console.warn(`  - ${w}`);
   }
   const catalog = { version: 1, generatedAt: new Date().toISOString(), skills, personas, shows, stations, apps };
   const counts = `skills=${skills.length} personas=${personas.length} shows=${shows.length} stations=${stations.length} apps=${apps.length}`;
