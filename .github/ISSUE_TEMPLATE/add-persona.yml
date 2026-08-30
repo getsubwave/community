@@ -132,6 +132,12 @@ body:
         - The soul is your own work (or cleared for sharing), contains nothing
           unlawful, hateful, or designed to deceive listeners, and does not
           imitate a real, living person without their consent.
+        - The character is yours rather than one lifted from a book, film, game,
+          comic or TV series. This catalog installs onto stations run by other
+          people, so a licensed character isn't something it can carry. An
+          original DJ who happens to share a genre with something you love is
+          fine — the wasteland survivalist, the starship computer and the
+          shock-jock are all archetypes, and archetypes are free.
         - It contains no secrets or personal data.
         - Your GitHub username is recorded as the persona's submitter (shown as a
           credit line in the community catalog), along with the dates it was added
@@ -145,6 +151,8 @@ body:
     attributes:
       label: Before you submit
       options:
+        - label: This DJ is my own character — not one from a book, film, game, comic or TV series.
+          required: true
         - label: I understand a pull request will be opened from this issue and a maintainer will review it.
           required: true
         - label: I agree to the contribution terms above.
