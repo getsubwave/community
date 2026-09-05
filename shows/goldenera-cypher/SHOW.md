@@ -2,7 +2,7 @@
 name: goldenera-cypher
 displayName: The Golden Era Cypher
 moods: energetic, reflective, driving, festival
-genres: hip hop, rap, boom bap, 90s hip hop, oldschool
+genres: hip hop, rap, boom bap
 eras: 1980-1995
 programme: true
 submittedBy: oliverstickel
