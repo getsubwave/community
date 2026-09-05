@@ -2,7 +2,7 @@
 name: velvetcrypt
 displayName: The Velvet Crypt
 moods: reflective, spiritual, night, cultural
-genres: gothic rock, gothic, folk, ndh, darkwave, industrial
+genres: gothic rock, deathrock, neofolk, neue deutsche härte, darkwave, industrial
 energies: low, medium
 programme: true
 submittedBy: oliverstickel
