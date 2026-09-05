@@ -35,10 +35,14 @@ jobs:
   build-pr:
     name: Build station PR from issue
     runs-on: ubuntu-latest
+    outputs:
+      branch: ${{ steps.build.outputs.branch }}
+      built: ${{ steps.build.outputs.built }}
     # Only act on issues opened through the station-submission form.
     if: contains(join(github.event.issue.labels.*.name, ','), 'station-submission')
     steps:
       - uses: actions/github-script@v7
+        id: build
         with:
           script: |
             const issue = context.payload.issue;
@@ -97,7 +101,7 @@ jobs:
               }).catch(() => {});
             };
 
-            if (problems.length) { await fail(problems); return; }
+            if (problems.length) { core.setOutput('built', 'false'); await fail(problems); return; }
 
             // --- 3. Build the slug + station JSON ---
             const slug = name.toLowerCase()
@@ -137,12 +141,16 @@ jobs:
             }
 
             // --- 5. Write/refresh the station file on that branch ---
+            // Previous content of the file on the branch, so step 8 can tell a real
+            // edit from a re-run that rewrites the identical entry.
+            let prevContent = '';
             let existingSha;
             try {
               const existing = await github.rest.repos.getContent({
                 owner, repo, path: filePath, ref: branch,
               });
               existingSha = existing.data.sha;
+              prevContent = Buffer.from(existing.data.content || '', 'base64').toString('utf8');
             } catch (e) {
               if (e.status !== 404) throw e;
             }
@@ -158,6 +166,7 @@ jobs:
               owner, repo, state: 'open', head: `${owner}:${branch}`,
             });
             let pr = open.data[0];
+            let openedPr = false;
             const prBody =
               `Adds **${name}** to the [stations directory](${url}).\n\n` +
               `Generated automatically from #${issue.number}. Closes #${issue.number}.\n\n` +
@@ -169,6 +178,7 @@ jobs:
                 body: prBody,
               });
               pr = created.data;
+              openedPr = true;
               await github.rest.issues.addLabels({
                 owner, repo, issue_number: pr.number, labels: ['stations'],
               }).catch(() => {});
@@ -178,14 +188,89 @@ jobs:
               });
             }
 
+            // The branch name is derived from the slug, so renaming the slug on the
+            // issue sends the next run to a different branch: the lookup above finds
+            // no PR, opens a second one, and the first stays open still claiming
+            // "Closes #<issue>". Close any other open PR built from this issue so a
+            // rename leaves exactly one, and the stale copy can't be merged alongside
+            // the current one under a different slug.
+            const madeBy = `Generated automatically from #${issue.number}.`;
+            const allOpen = await github.paginate(github.rest.pulls.list, {
+              owner, repo, state: 'open', per_page: 100,
+            });
+            for (const stale of allOpen) {
+              if (stale.number === pr.number) continue;
+              if (!(stale.body || '').includes(madeBy)) continue;
+              await github.rest.issues.createComment({
+                owner, repo, issue_number: stale.number,
+                body: `Superseded by #${pr.number} — #${issue.number} now builds \`${filePath}\`, ` +
+                  `so this branch carries an out-of-date copy under the old slug. Closing it ` +
+                  `so the submission has a single open PR.`,
+              });
+              await github.rest.pulls.update({
+                owner, repo, pull_number: stale.number, state: 'closed',
+              });
+            }
+
+            // Hand the branch to the validate job below.
+            core.setOutput('branch', branch);
+            core.setOutput('built', 'true');
+
             // --- 7. Tell the contributor ---
             await github.rest.issues.removeLabel({
               owner, repo, issue_number: issue.number, name: 'needs-info',
             }).catch(() => {});
+
+            // Only re-notify when the entry itself changed. The issue template applies
+            // its label at creation, so `opened` and `labeled` both fire and the second
+            // run rewrites an identical file; same for an edit that only touches the
+            // reviewer note. A duplicate "✅ Opened" comment is pure noise.
+            const settled = (t) => t.replace(/^dateModified:.*$/m, '').trim();
+            if (!openedPr && settled(prevContent) === settled(content)) return;
+
             await github.rest.issues.createComment({
               owner, repo, issue_number: issue.number,
               body: `✅ Opened ${pr.html_url} with your station at \`${filePath}\`.\n\n` +
                 `A maintainer will review and merge it — your station appears on the ` +
                 `map on the next deploy. Need to change something? Just edit this issue ` +
                 `and the PR updates automatically.`,
+            });
+
+  # A PR opened with GITHUB_TOKEN does not trigger further workflow runs, so
+  # validate-catalog.yml never fires on these branches — every generated PR
+  # reached review with no checks at all. Run the same check here, inside the
+  # run that is already authorised, and report a failure back on the issue.
+  validate:
+    name: Validate generated entry
+    needs: build-pr
+    if: needs.build-pr.outputs.built == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.build-pr.outputs.branch }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Validate catalog entries
+        shell: bash
+        run: |
+          set -o pipefail
+          node scripts/build-catalog.mjs --check 2>&1 | tee /tmp/catalog-check.log
+      - name: Report failure on the issue
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            let log = '';
+            try { log = fs.readFileSync('/tmp/catalog-check.log', 'utf8').slice(-3000); } catch {}
+            const fence = '```';
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.issue.number,
+              body: '⚠️ The catalog check failed on the branch built from this submission:\n\n' +
+                fence + '\n' + log + '\n' + fence + '\n\n' +
+                'A maintainer will take a look — you may not need to do anything.',
             });
