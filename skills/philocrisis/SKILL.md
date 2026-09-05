@@ -1,6 +1,7 @@
 ---
 name: philocrisis
 label: Philosophical Crisis
+cooldown: 6h
 submittedBy: oliverstickel
 dateAdded: 2026-09-01
 dateModified: 2026-09-01
