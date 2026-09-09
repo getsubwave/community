@@ -1,0 +1,16 @@
+{
+  "name": "SUB/WAVE E-ink Display for TRMNL",
+  "url": "https://github.com/mrain1p/subwave-trmnl-display",
+  "type": "integration",
+  "description": "Puts your station on a TRMNL e-ink panel — the on-air show, its host and description, and the rest of the day's programming guide.",
+  "author": "@mrain1p",
+  "platforms": [
+    "TRMNL",
+    "E-ink"
+  ],
+  "repo": "https://github.com/mrain1p/subwave-trmnl-display",
+  "icon": "https://raw.githubusercontent.com/mrain1p/subwave-trmnl-display/main/icon.png",
+  "screenshot": "https://raw.githubusercontent.com/mrain1p/subwave-trmnl-display/main/docs/full.png",
+  "featured": false,
+  "submitted": "2026-09-09"
+}
