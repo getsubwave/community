@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-09-05T08:43:44.295Z",
+  "generatedAt": "2026-09-09T07:44:39.012Z",
   "skills": [
     {
       "slug": "commute-check-in",
@@ -813,6 +813,23 @@
       "screenshot": "https://raw.githubusercontent.com/drachenhort/radiotop/main/assets/screenshots/playing.png",
       "featured": false,
       "submitted": "2026-08-04"
+    },
+    {
+      "slug": "sub-wave-e-ink-display-for-trmnl",
+      "name": "SUB/WAVE E-ink Display for TRMNL",
+      "url": "https://github.com/mrain1p/subwave-trmnl-display",
+      "type": "integration",
+      "description": "Puts your station on a TRMNL e-ink panel — the on-air show, its host and description, and the rest of the day's programming guide.",
+      "author": "@mrain1p",
+      "platforms": [
+        "TRMNL",
+        "E-ink"
+      ],
+      "repo": "https://github.com/mrain1p/subwave-trmnl-display",
+      "icon": "https://raw.githubusercontent.com/mrain1p/subwave-trmnl-display/main/icon.png",
+      "screenshot": "https://raw.githubusercontent.com/mrain1p/subwave-trmnl-display/main/docs/full.png",
+      "featured": false,
+      "submitted": "2026-09-09"
     },
     {
       "slug": "subwave-auto",
