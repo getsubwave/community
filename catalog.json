@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-09-28T09:40:33.611Z",
+  "generatedAt": "2026-10-03T09:05:16.016Z",
   "skills": [
     {
       "slug": "commute-check-in",
@@ -916,6 +916,25 @@
       "repo": "https://github.com/FoggyMtnDrifter/subwave-discord-bot",
       "featured": false,
       "submitted": "2026-08-05"
+    },
+    {
+      "slug": "subwave-lyrics",
+      "name": "SUB/WAVE Lyrics",
+      "url": "https://github.com/sovereignalmida/subwave-lyrics",
+      "type": "web",
+      "description": "A fullscreen lyrics display that follows a SUB/WAVE station automatically, with synchronized LRCLIB lyrics, artwork, responsive wall-display layouts, and Docker deployment.",
+      "author": "@sovereignalmida",
+      "platforms": [
+        "Web",
+        "Docker",
+        "Linux",
+        "amd64",
+        "arm64"
+      ],
+      "repo": "https://github.com/sovereignalmida/subwave-lyrics",
+      "icon": "https://raw.githubusercontent.com/sovereignalmida/subwave-lyrics/main/assets/icon.png",
+      "screenshot": "https://raw.githubusercontent.com/sovereignalmida/subwave-lyrics/main/assets/screenshot.png",
+      "featured": false
     },
     {
       "slug": "subwave-mcp",
