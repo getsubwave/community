@@ -65,6 +65,11 @@ jobs:
             const SLUG_RE = /^[a-z0-9][a-z0-9-]{0,48}$/;
             const COOLDOWN_RE = /^\d+\s*[smhd]?$/;
             const CONTEXT_FIELDS = new Set(['date', 'clock', 'time', 'weather', 'festival', 'show', 'listeners']);
+            // Same bounds scripts/build-catalog.mjs enforces (and the validate job
+            // below re-checks): an https feed, and a read count of 1-50 that only
+            // means something alongside one.
+            const FEED_MAX_ITEMS_LIMIT = 50;
+            const FEED_URL_MAX = 500;
 
             // --- 1. Parse the issue-form body into a { heading: value } map ---
             // GitHub renders each field as "### <label>\n\n<value>"; empty optional
@@ -93,6 +98,8 @@ jobs:
             const cooldown = get('Cooldown');
             const contextRaw = get('Context fields');
             const windowRaw = get('When it can air').toLowerCase();
+            const feed = get('Feed URL');
+            const feedMaxRaw = get('Feed items to read');
 
             // --- 2. Validate ---
             const problems = [];
@@ -101,6 +108,23 @@ jobs:
             else if (RESERVED.has(slug)) problems.push(`**Skill slug** \`${slug}\` is reserved — it shadows a built-in capability. Pick another name.`);
             if (!brief) problems.push('**The brief** is required — it\'s what the DJ says on air.');
             if (cooldown && !COOLDOWN_RE.test(cooldown)) problems.push('**Cooldown** must look like `45m`, `6h`, `2d`, or a bare number (minutes).');
+
+            // The feed is written into frontmatter verbatim and fetched by every
+            // station that installs the skill, so it must be one clean https URL:
+            // no whitespace (which would also break the frontmatter line).
+            if (feed) {
+              let url = null;
+              try { url = new URL(feed); } catch {}
+              if (!url || /\s/.test(feed) || feed.length > FEED_URL_MAX) problems.push(`**Feed URL** must be a single URL of up to ${FEED_URL_MAX} characters.`);
+              else if (url.protocol !== 'https:') problems.push('**Feed URL** must start with `https://`.');
+            }
+            let feedMaxItems = '';
+            if (feedMaxRaw) {
+              const n = Number(feedMaxRaw);
+              if (!feed) problems.push('**Feed items to read** needs a **Feed URL**.');
+              else if (!Number.isInteger(n) || n < 1 || n > FEED_MAX_ITEMS_LIMIT) problems.push(`**Feed items to read** must be a whole number from 1 to ${FEED_MAX_ITEMS_LIMIT}.`);
+              else feedMaxItems = String(n);
+            }
 
             let contextList = [];
             if (contextRaw) {
@@ -175,6 +199,8 @@ jobs:
             if (cooldown) fm.push(`cooldown: ${cooldown}`);
             if (contextList.length) fm.push(`context: ${contextList.join(', ')}`);
             if (windowRaw === 'commute') fm.push('window: commute');
+            if (feed) fm.push(`feed: ${feed}`);
+            if (feedMaxItems) fm.push(`feedMaxItems: ${feedMaxItems}`);
             if (submittedBy) fm.push(`submittedBy: ${submittedBy}`);
             fm.push(`dateAdded: ${dateAdded}`);
             fm.push(`dateModified: ${today}`);
@@ -200,6 +226,9 @@ jobs:
             const prBody =
               `Adds the **${displayLabel}** community skill.\n\n` +
               (summary ? `> ${summary}\n\n` : '') +
+              (feed ? `**Reads a feed:** every station that installs this fetches ${feed}. ` +
+                `Open it and check it is public, stable and on-topic, and that the brief ` +
+                `says nothing when no items fit.\n\n` : '') +
               `Generated automatically from #${issue.number}. Closes #${issue.number}.\n\n` +
               '```markdown\n' + content + '```\n';
             if (!pr) {
