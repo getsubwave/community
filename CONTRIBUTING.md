@@ -30,9 +30,25 @@ cooldown: 2h                     # min gap between airings: "90m" | "6h" | "2d" 
 context: clock, time             # optional "right now" fields the segment may mention:
                                  #   date, clock, time, weather, festival, show, listeners
 window: any                      # "any" (default) or "commute"
+cron: 0 17 * * 5                 # optional fixed schedule: 5 fields, or 6 with seconds
+cronOnly: true                   # optional: fire ONLY on the cron (needs `cron`)
+cohosts: true                    # optional: the host and every guest each speak
+feed: https://example.com/rss    # optional: an https RSS/Atom feed the skill reads first
+feedMaxItems: 10                 # optional: how much of the feed to read, 1–50 (needs `feed`)
 ---
 Say one short line acknowledging that some listeners are probably in transit right now…
 ```
+
+**Feeds give a skill real data without code.** A station that installs a skill with a `feed:`
+fetches that feed before the DJ speaks and hands it the fresh items (title + blurb). Already-used
+items are skipped, and a failed fetch means the skill stays quiet rather than making things up. So
+write the brief to speak *only* from those items, and to **say nothing when none fit or none came
+back** — a station on an older controller installs the brief without the feed. Pick a feed that is
+public, stable and on-topic; a feed full of deals or promos gives the DJ nothing to work with.
+`skills/music-press` and `skills/good-news` are worked examples.
+
+`true`/`false` are the only values `cronOnly` and `cohosts` accept — anything else fails the build
+rather than silently installing a different skill.
 
 The slug must not shadow a built-in/reserved kind: `link`, `dj-speak`, `announcement`,
 `station-id`, `hourly`, `hourly-check`, `album-anniversary`, `curiosity`, `library-deep-cut`,
