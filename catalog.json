@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-10-03T09:05:16.016Z",
+  "generatedAt": "2026-10-08T11:03:10.390Z",
   "skills": [
     {
       "slug": "commute-check-in",
@@ -33,6 +33,14 @@
       "dateModified": "2026-07-05"
     },
     {
+      "slug": "good-news",
+      "label": "Good news",
+      "brief": "Pass on one genuinely good story from the feed in a sentence or two: a rescue, a recovery, a kindness between strangers, a species coming back, a town fixing something together. Tell it like a friend sharing something that made their day, warm and plain. No \"and now for some good news\", and no moral tacked on the end. Choose a concrete story about real people or places over roundups, anniversaries, product news or opinion pieces. Use only what the item says, and add no names, numbers or places it doesn't give. If nothing on the feed is a real story, or no items came back, say nothing.",
+      "cooldown": "4h",
+      "feed": "https://www.goodnewsnetwork.org/feed/",
+      "feedMaxItems": 10
+    },
+    {
       "slug": "micro-poem",
       "label": "Micro Poem",
       "brief": "A two-line, unrhymed micro-poem sparked by the track that just played or the feel of the moment — the light outside, the hour, the weather. Say it plainly, like a thought you couldn't keep in. No title, no preamble, no \"here's a little poem\" — just the two lines. Keep it under twenty words total and never explain it afterward.",
@@ -50,6 +58,14 @@
       "submittedBy": "perminder-klair",
       "dateAdded": "2026-07-03",
       "dateModified": "2026-07-03"
+    },
+    {
+      "slug": "music-press",
+      "label": "Music press bulletin",
+      "brief": "Pick one story from the music news feed and pass it on in a sentence or two, the way a DJ mentions something they read this morning. New records, tours, reunions, signings, reissues and live sessions are the beat; skip lawsuits, court cases, feuds and politics. If a story is about the artist on air, choose that one. If it is someone's death, say it plainly and with care, with no joke and no bright pivot back to the music. Use only what the headline and blurb say: add no dates, quotes, chart positions or details they don't give. Never read the headline out word for word, and no URLs. If nothing on the feed fits, or no headlines came back, say nothing.",
+      "cooldown": "3h",
+      "feed": "https://pitchfork.com/feed/feed-news/rss",
+      "feedMaxItems": 10
     },
     {
       "slug": "news-briefing",
