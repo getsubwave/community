@@ -12,7 +12,8 @@ body:
         merges it, and it ships to every station as an installable community skill.
 
         **This path is for prompt-only skills** — a brief plus a few knobs. Skills that
-        run their own `tool.mjs` code aren't accepted here (yet). **You don't need to fork anything.**
+        run their own `tool.mjs` code aren't accepted here (yet). A skill *can* read a public
+        RSS/Atom feed for real data, though; that's a URL, not code. **You don't need to fork anything.**
   - type: input
     id: skill-name
     attributes:
@@ -69,6 +70,26 @@ body:
       default: 0
     validations:
       required: false
+  - type: input
+    id: feed
+    attributes:
+      label: Feed URL
+      description: >
+        Optional. An https:// RSS or Atom feed the skill reads before it speaks. Every station
+        that installs your skill fetches it and hands the DJ the fresh items (title + blurb), so
+        pick one that is public, stable and on-topic. If you set one, write the brief to speak
+        only from those items and to say nothing when none fit.
+      placeholder: https://pitchfork.com/feed/feed-news/rss
+    validations:
+      required: false
+  - type: input
+    id: feed-max-items
+    attributes:
+      label: Feed items to read
+      description: Optional, needs a feed URL. How much of the feed to read each time, 1–50. Defaults to the station's setting (10).
+      placeholder: '10'
+    validations:
+      required: false
   - type: textarea
     id: description
     attributes:
@@ -86,7 +107,8 @@ body:
 
         - The brief is your own work (or cleared for sharing), and contains nothing
           unlawful, hateful, or designed to deceive listeners.
-        - It contains no secrets, personal data, or instructions to fetch untrusted code.
+        - It contains no secrets, personal data, or instructions to fetch untrusted code, and any
+          feed URL is a public feed you'd be happy for every installing station to fetch.
         - Your GitHub username is recorded as the skill's submitter (shown as a credit
           line in the community catalog), along with the dates it was added and last updated.
         - SUB/WAVE may include, edit, or remove it from the catalog at its discretion.

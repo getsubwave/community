@@ -62,6 +62,17 @@ const APP_IMAGE_HOSTS = ['raw.githubusercontent.com', 'user-images.githubusercon
 const MAX_PLATFORM_LEN = 32;
 const MAX_PLATFORMS = 6;
 
+// A skill's `cron:` must be 5 fields, or 6 with seconds — the controller's
+// SKILL_CRON_RE. Field RANGES are node-cron's to judge, and the station checks
+// them at install, so a shape check is all this layer can honestly make.
+const SKILL_CRON_RE = /^\S+(?:\s+\S+){4,5}$/;
+
+// A skill's `feed:` becomes a fetch on every station that installs it (the
+// loader generates a fetch tool from it — no code ships). The station accepts
+// http(s); the catalog asks for https, since this one URL is fetched by every
+// installing station rather than one operator who typed it.
+const FEED_MAX_ITEMS_LIMIT = 50;
+
 const errors = [];
 const fail = (where, msg) => errors.push(`${where}: ${msg}`);
 
@@ -115,6 +126,35 @@ const provenance = data => ({
 });
 const clean = obj => Object.fromEntries(Object.entries(obj).filter(([, v]) => v !== undefined));
 
+// A frontmatter boolean the station reads with `=== true`. Anything other than
+// true/false is refused rather than read as false: `cohosts: yes` silently
+// installing a one-voice skill is the failure this prevents.
+function flag(data, key, where) {
+  const raw = data[key];
+  if (raw == null || raw === '') return undefined;
+  const v = String(raw).trim().toLowerCase();
+  if (v === 'true') return true;
+  if (v === 'false') return undefined;
+  fail(where, `${key} must be true or false (is "${raw}")`);
+  return undefined;
+}
+
+function skillFeed(data, where) {
+  const raw = data.feed?.trim();
+  if (data.feedMaxItems && !raw) fail(where, 'feedMaxItems needs a feed');
+  if (!raw) return {};
+  let url;
+  try { url = new URL(raw); } catch { fail(where, `feed "${raw}" is not a URL`); return {}; }
+  if (url.protocol !== 'https:') { fail(where, `feed "${raw}" must be an https:// URL`); return {}; }
+  let feedMaxItems;
+  if (data.feedMaxItems) {
+    const n = Number(data.feedMaxItems);
+    if (Number.isInteger(n) && n >= 1 && n <= FEED_MAX_ITEMS_LIMIT) feedMaxItems = n;
+    else fail(where, `feedMaxItems must be a whole number from 1 to ${FEED_MAX_ITEMS_LIMIT} (is "${data.feedMaxItems}")`);
+  }
+  return { feed: raw, feedMaxItems };
+}
+
 async function buildSkills() {
   const out = [];
   for (const slug of await listDirs(join(ROOT, 'skills'))) {
@@ -126,13 +166,21 @@ async function buildSkills() {
     const { data, body } = parseFrontmatter(raw);
     if ((data.name || slug).trim() !== slug) { fail(where, `name "${data.name}" must equal folder slug`); continue; }
     if (!body) { fail(where, 'brief (body) is required'); continue; }
+    const cron = data.cron?.trim() || undefined;
+    if (cron && !SKILL_CRON_RE.test(cron)) fail(where, `cron "${cron}" must be 5 fields, or 6 with seconds (e.g. "0 17 * * 5")`);
+    const cronOnly = flag(data, 'cronOnly', where);
+    if (cronOnly && !cron) fail(where, 'cronOnly needs a cron — without one the skill would never air');
     out.push(clean({
       slug,
       label: (data.label || slug).trim(),
       brief: body,
       cooldown: data.cooldown ? String(data.cooldown).trim() : undefined,
+      cron,
+      cronOnly,
+      cohosts: flag(data, 'cohosts', where),
       window: data.window === 'commute' ? 'commute' : undefined,
       context: (data.context ?? data.contextFields)?.trim() || undefined,
+      ...skillFeed(data, where),
       ...provenance(data),
     }));
   }
