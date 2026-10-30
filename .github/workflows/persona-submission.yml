@@ -112,7 +112,7 @@ jobs:
             else if (displayName.length > 40) problems.push('**On-air name** must be at most 40 characters.');
             if (tagline.length > 80) problems.push('**Tagline** must be at most 80 characters.');
             if (!soul) problems.push('**The soul** is required — it\'s the character prose the DJ speaks from.');
-            else if (soul.length > 1000) problems.push(`**The soul** must be at most 1000 characters (currently ${soul.length}).`);
+            else if (soul.length > 2000) problems.push(`**The soul** must be at most 2000 characters (currently ${soul.length}).`);
             if (frequency && !FREQUENCIES.has(frequency)) problems.push(`**Talk frequency** must be one of ${[...FREQUENCIES].join(', ')}.`);
             if (scriptLength && !SCRIPT_LENGTHS.has(scriptLength)) problems.push(`**Script length** must be one of ${[...SCRIPT_LENGTHS].join(', ')}.`);
             if (!humour.ok) problems.push('**Humour dial** must be a whole number 0–10.');

@@ -199,7 +199,7 @@ async function buildPersonas() {
     if ((data.name || slug).trim() !== slug) { fail(where, `name "${data.name}" must equal folder slug`); continue; }
     const soul = body.trim();
     if (!soul) { fail(where, 'soul (body) is required'); continue; }
-    if (soul.length > 1000) { fail(where, `soul must be <=1000 chars (is ${soul.length})`); continue; }
+    if (soul.length > 2000) { fail(where, `soul must be <=2000 chars (is ${soul.length})`); continue; }
     if (data.frequency && !FREQUENCIES.includes(data.frequency)) fail(where, `frequency "${data.frequency}" not in ${FREQUENCIES.join('|')}`);
     if (data.scriptLength && !SCRIPT_LENGTHS.includes(data.scriptLength)) fail(where, `scriptLength "${data.scriptLength}" not in ${SCRIPT_LENGTHS.join('|')}`);
     if (SECOND_PERSON_RE.test(soul)) warn(where, 'soul opens like a system prompt — write it as third-person character prose (see personas/saffron-am)');
@@ -251,7 +251,7 @@ async function buildShows() {
     const name = (data.displayName || slug).trim().slice(0, 60);
     if (!name) { fail(where, 'displayName is required'); continue; }
     const topic = body.trim();
-    if (topic.length > 1000) { fail(where, `topic (body) must be <=1000 chars (is ${topic.length})`); continue; }
+    if (topic.length > 2000) { fail(where, `topic (body) must be <=2000 chars (is ${topic.length})`); continue; }
     const moods = commaList(data.moods).slice(0, 6);
     for (const m of moods) if (!SHOW_MOODS.includes(m)) fail(where, `mood "${m}" not in ${SHOW_MOODS.join('|')}`);
     const energies = commaList(data.energies).slice(0, 6);
