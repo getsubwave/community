@@ -15,11 +15,15 @@ name: Station submission → PR
 
 # NOTE: the `station-submission` label MUST exist as a repo label, otherwise
 # GitHub silently drops it from the issue template and the `if:` guard below
-# never matches (every run shows "skipped"). `labeled` is included so a
-# maintainer can re-trigger a stuck submission by re-applying the label.
+# never matches (every run shows "skipped"). `labeled` is what starts a new
+# submission: the template applies its label at creation, so adding `opened`
+# as well would run twice and post every comment twice. It is also how a
+# maintainer re-triggers a stuck submission, by re-applying the label; the
+# `if:` guard ignores any other label, which would only repeat the last
+# result.
 on:
   issues:
-    types: [opened, edited, labeled]
+    types: [edited, labeled]
 
 permissions:
   contents: write
@@ -39,7 +43,7 @@ jobs:
       branch: ${{ steps.build.outputs.branch }}
       built: ${{ steps.build.outputs.built }}
     # Only act on issues opened through the station-submission form.
-    if: contains(join(github.event.issue.labels.*.name, ','), 'station-submission')
+    if: contains(join(github.event.issue.labels.*.name, ','), 'station-submission') && (github.event.action != 'labeled' || github.event.label.name == 'station-submission')
     steps:
       - uses: actions/github-script@v7
         id: build
@@ -221,10 +225,9 @@ jobs:
               owner, repo, issue_number: issue.number, name: 'needs-info',
             }).catch(() => {});
 
-            // Only re-notify when the entry itself changed. The issue template applies
-            // its label at creation, so `opened` and `labeled` both fire and the second
-            // run rewrites an identical file; same for an edit that only touches the
-            // reviewer note. A duplicate "✅ Opened" comment is pure noise.
+            // Only re-notify when the entry itself changed. Re-applying the label, or an
+            // edit that only touches the reviewer note, rewrites an identical file. A
+            // duplicate "✅ Opened" comment is pure noise.
             const settled = (t) => t.replace(/^dateModified:.*$/m, '').trim();
             if (!openedPr && settled(prevContent) === settled(content)) return;
 
