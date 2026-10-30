@@ -37,7 +37,7 @@ body:
       label: The brief
       description: >
         The standing topic brief — what this show is about and how the DJ should
-        colour their talk during it. Written as description, in character. Up to 1000
+        colour their talk during it. Written as description, in character. Up to 2000
         characters. Leave blank if the music filters alone define the show.
       placeholder: A slow midnight drift for people who aren't ready for the day to end. Keep it hushed, unhurried, one listener at a time.
     validations:

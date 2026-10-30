@@ -44,7 +44,7 @@ body:
       label: The soul
       description: >
         The character prose — who this DJ is, how they talk, what they never do.
-        Written as description, not instructions to a model. 1–1000 characters;
+        Written as description, not instructions to a model. 1–2000 characters;
         this becomes the persona's `soul` verbatim.
       placeholder: A morning-show host at heart, even at midnight. Warm, quick to smile, talks to one listener at a time…
     validations:

@@ -56,7 +56,7 @@ The slug must not shadow a built-in/reserved kind: `link`, `dj-speak`, `announce
 
 ## Personas — `personas/<slug>/PERSONA.md`
 
-A DJ character. The body is the **soul** (the character prose, ≤1000 chars). Station-specific
+A DJ character. The body is the **soul** (the character prose, ≤2000 chars). Station-specific
 fields (voice, avatar, which skills it runs) are set by the operator after install — don't include
 them.
 
@@ -78,7 +78,7 @@ A crate-digger who treats every record like a found document…
 
 A **show template**: a standing brief + music-steering filters + mode flags. A show carries only
 what's portable — the host persona, guests, theme, playlist anchors, and the weekly schedule slot
-are all bound by the operator after install. The body is the **topic** brief (≤1000 chars).
+are all bound by the operator after install. The body is the **topic** brief (≤2000 chars).
 
 ```markdown
 ---

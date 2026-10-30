@@ -111,7 +111,7 @@ jobs:
             else if (!SLUG_RE.test(slug)) problems.push('**Show slug** must be a lowercase slug: start with a letter or digit, then letters/digits/hyphens, ≤49 chars (e.g. `late-feels`).');
             if (!displayName) problems.push('**Show name** is required.');
             else if (displayName.length > 60) problems.push('**Show name** must be at most 60 characters.');
-            if (topic.length > 1000) problems.push(`**The brief** must be at most 1000 characters (currently ${topic.length}).`);
+            if (topic.length > 2000) problems.push(`**The brief** must be at most 2000 characters (currently ${topic.length}).`);
             if (segmentSkill.length > 64) problems.push('**Segment skill** must be at most 64 characters.');
 
             // Moods — comma list, each in SHOW_MOODS, max 6.
