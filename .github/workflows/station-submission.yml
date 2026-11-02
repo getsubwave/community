@@ -172,7 +172,7 @@ jobs:
             let pr = open.data[0];
             let openedPr = false;
             const prBody =
-              `Adds **${name}** to the [stations directory](${url}).\n\n` +
+              `Adds **[${name}](${url})** to the [stations directory](https://getsubwave.com/stations).\n\n` +
               `Generated automatically from #${issue.number}. Closes #${issue.number}.\n\n` +
               '```json\n' + content + '```\n';
             if (!pr) {
