@@ -232,7 +232,7 @@ jobs:
             let pr = open.data[0];
             let openedPr = false;
             const prBody =
-              `Adds **${name}** (${type}) to the [apps directory](${url}).\n\n` +
+              `Adds **[${name}](${url})** (${type}) to the [apps directory](https://getsubwave.com/apps).\n\n` +
               `Generated automatically from #${issue.number}. Closes #${issue.number}.\n\n` +
               '```json\n' + content + '```\n';
             if (!pr) {
