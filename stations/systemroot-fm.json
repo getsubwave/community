@@ -1,10 +1,12 @@
 {
   "name": "SYSTEMROOT FM",
   "url": "https://radio.systemroot.uk",
-  "location": "MADRID",
-  "country": "ESPAÑA",
-  "genre": "Electronica",
-  "description": "SYSTEMROOT FM\nIndependent sounds · Electronic culture · Underground frequencies\n\nIdentidad musical\n- Electrónica: house, deep house, melodic house, organic house, minimal y sonidos electrónicos experimentales.\n- Trip-hop: ritmos hipnóticos, atmósferas oscuras, bajos profundos y melodías envolventes.\n- Hip-hop: old school, instrumental hip-hop, underground, jazzy hip-hop y beats.\n- Downtempo: electrónica relajada, ritmos lentos, texturas orgánicas y sonidos cinematográficos.\n- Reggae: roots reggae, reggae clásico y nuevas propuestas.\n- Dub: dub clásico, dub electrónico, steppers, bajos profundos y efectos espaciales.\n- Chill: chillout, ambient, balearic, lounge y electrónica atmosférica.",
+  "location": "Madrid, Spain",
+  "country": "Spain",
+  "lat": 40.4168,
+  "lon": -3.7038,
+  "genre": "electronic / trip-hop / dub",
+  "description": "Independent sounds, electronic culture, underground frequencies. House, minimal, trip-hop, instrumental hip-hop, downtempo, roots reggae, dub and chill.",
   "featured": false,
   "submitted": "2026-11-23"
 }
