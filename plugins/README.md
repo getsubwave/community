@@ -18,13 +18,14 @@ install button.
 
 ## How to submit (the easy way — no fork)
 
-1. Run the conformance kit from a SUB/WAVE checkout against a real server or library, with
-   `--json`:
+1. Run the conformance kit against a real server or library, with `--json`:
 
    ```bash
-   npm --prefix router install
-   npm --prefix router run conformance -- /path/to/your-plugin --config key=value --json
+   npx @subwave/source-sdk conformance /path/to/your-plugin --config key=value --json
    ```
+
+   From a SUB/WAVE checkout it's the same kit:
+   `npm --prefix router install && npm --prefix router run conformance -- /path/to/your-plugin --config key=value --json`.
 
    It has to pass. A report with a failed check can't be listed.
 2. Open the [plugin form](https://github.com/getsubwave/community/issues/new?template=add-plugin.yml)

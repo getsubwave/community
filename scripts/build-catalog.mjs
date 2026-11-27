@@ -421,7 +421,7 @@ async function buildPlugins() {
 
     const c = json.conformance;
     if (!c || typeof c !== 'object' || Array.isArray(c)) {
-      fail(where, 'conformance is required: the {pass, warn, fail, skip} counts from `npm --prefix router run conformance -- <plugin> --json`');
+      fail(where, 'conformance is required: the {pass, warn, fail, skip} counts from `npx @subwave/source-sdk conformance <plugin> --json`');
     } else {
       for (const k of CONFORMANCE_OUTCOMES) {
         if (!Number.isInteger(c[k]) || c[k] < 0) fail(where, `conformance.${k} must be a whole number`);

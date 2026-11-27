@@ -14,12 +14,13 @@ body:
         **A plugin is code that runs inside every station that installs it**, so a listing
         is a review of that code, not only of this form. Expect questions on the PR.
 
-        Run the kit from a SUB/WAVE checkout against a real server or library:
+        Run the conformance kit against a real server or library:
 
         ```bash
-        npm --prefix router install
-        npm --prefix router run conformance -- /path/to/your-plugin --config key=value --json
+        npx @subwave/source-sdk conformance /path/to/your-plugin --config key=value --json
         ```
+
+        (Or, from a SUB/WAVE checkout: `npm --prefix router install && npm --prefix router run conformance -- /path/to/your-plugin --config key=value --json`.)
 
         It has to pass: a report with a failed check can't be listed.
   - type: input
