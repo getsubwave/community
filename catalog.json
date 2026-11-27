@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-11-27T16:37:03.914Z",
+  "generatedAt": "2026-11-27T16:45:06.279Z",
   "skills": [
     {
       "slug": "commute-check-in",
@@ -1121,6 +1121,26 @@
       "screenshot": "https://raw.githubusercontent.com/getsubwave/community/main/apps/assets/web-player-screenshot.png",
       "featured": false,
       "submitted": "2026-08-03"
+    }
+  ],
+  "plugins": [
+    {
+      "slug": "folder",
+      "name": "Music folder",
+      "plugin": "folder",
+      "connectsTo": "A folder of audio files",
+      "repo": "https://github.com/perminder-klair/subwave/tree/develop/docs/examples/sources/folder",
+      "apiVersion": 1,
+      "description": "Plays audio files straight from a folder laid out as Artist/Album/NN Title.ext, with no music server. The worked example from the plugin guide: no tags are read, so there are no genres, and the analyzer measures durations.",
+      "author": "@perminder-klair",
+      "conformance": {
+        "pass": 15,
+        "warn": 2,
+        "fail": 0,
+        "skip": 6
+      },
+      "hostFiles": true,
+      "submitted": "2026-11-27"
     }
   ]
 }
