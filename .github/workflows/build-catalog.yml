@@ -16,6 +16,7 @@ on:
       - 'shows/**'
       - 'stations/**'
       - 'apps/**'
+      - 'plugins/**'
       - 'scripts/build-catalog.mjs'
   workflow_dispatch: {}
 

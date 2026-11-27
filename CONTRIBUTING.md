@@ -156,3 +156,11 @@ rather than hot-linked and can't be swapped after review.
 
 `description` is capped at 280 characters and `platforms` at 6 entries of 24 characters. Full
 field reference and the listing rules are in [`apps/README.md`](apps/README.md).
+
+## Plugins — `plugins/<name>.json`
+
+One JSON object per music-source plugin for the [/plugins](https://getsubwave.com/plugins)
+directory. The filename is the plugin's manifest `name`, which is also the folder it installs
+into. Merging one is a review of the plugin's **code**, not only this entry: see
+[`plugins/README.md`](plugins/README.md) for the fields and what a reviewer checks.
+

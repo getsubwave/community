@@ -4,6 +4,11 @@
 // each entry, and emits one JSON index at the repo root. Zero dependencies
 // (Node built-ins only) so CI needs no install step.
 //
+// `plugins` (music-source plugins) is website-only too: the station's /plugins
+// directory (web/lib/plugins.ts) lists them, and installing one stays a manual,
+// read-the-code step on the operator's side. Listing is a review of the code,
+// which no script can do; this one checks the entry's shape.
+//
 // `apps` is the odd one out: it is NOT installable into a station — the
 // controller's registry picks only skills/personas/shows/stations off this index
 // and ignores the rest. Apps exist for the public /apps directory on the website
@@ -61,6 +66,16 @@ const APP_TYPES = ['mobile', 'web', 'desktop', 'terminal', 'bot', 'skin', 'integ
 const APP_IMAGE_HOSTS = ['raw.githubusercontent.com', 'user-images.githubusercontent.com', 'github.com'];
 const MAX_PLATFORM_LEN = 32;
 const MAX_PLATFORMS = 6;
+
+// Music-source plugins. The filename is the plugin's manifest `name`, which is
+// also the folder it installs into, so it follows the router's own rule
+// (router/src/host/manifest.ts PLUGIN_NAME_RE) and may not be a built-in's: the
+// router refuses a plugin that would shadow one.
+const PLUGIN_NAME_RE = /^[a-z][a-z0-9-]{1,31}$/;
+const BUILTIN_SOURCES = ['navidrome', 'jellyfin', 'plex', 'mock'];
+const SEMVER_RE = /^\d+\.\d+\.\d+$/;
+const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+const CONFORMANCE_OUTCOMES = ['pass', 'warn', 'fail', 'skip'];
 
 // A skill's `cron:` must be 5 fields, or 6 with seconds — the controller's
 // SKILL_CRON_RE. Field RANGES are node-cron's to judge, and the station checks
@@ -368,9 +383,73 @@ async function buildApps() {
   return out;
 }
 
+// Plugins: every field the /plugins card states must be true of the reviewed
+// code, so the floor is strict. A listed plugin passed the conformance kit (no
+// failed check) and links its source over https.
+async function buildPlugins() {
+  const out = [];
+  for (const file of await listFiles(join(ROOT, 'plugins'), '.json')) {
+    const slug = basename(file, '.json');
+    const where = `plugins/${file}`;
+    if (!PLUGIN_NAME_RE.test(slug)) { fail(where, 'filename must be the plugin name, matching /^[a-z][a-z0-9-]{1,31}$/'); continue; }
+    if (BUILTIN_SOURCES.includes(slug)) { fail(where, `"${slug}" is a built-in source; the router refuses a plugin that shadows it`); continue; }
+    let json;
+    try { json = JSON.parse(await readFile(join(ROOT, 'plugins', file), 'utf8')); }
+    catch (e) { fail(where, `invalid JSON: ${e.message}`); continue; }
+    if (!json || typeof json !== 'object' || Array.isArray(json)) { fail(where, 'must be a JSON object'); continue; }
+
+    const name = String(json.name ?? '').trim();
+    const plugin = String(json.plugin ?? '').trim();
+    const connectsTo = String(json.connectsTo ?? '').trim();
+    const repo = String(json.repo ?? '').trim();
+    if (!name) fail(where, 'name is required (the manifest label)');
+    else if (name.length > 60) fail(where, `name must be <=60 chars (is ${name.length})`);
+    if (plugin !== slug) fail(where, `plugin must equal the filename ("${slug}"): it is the manifest name and the install folder`);
+    if (!connectsTo) fail(where, 'connectsTo is required (what it plays from, e.g. "Emby")');
+    else if (connectsTo.length > 60) fail(where, `connectsTo must be <=60 chars (is ${connectsTo.length})`);
+    if (!repo) fail(where, 'repo is required: a listing is a review of the code');
+    else { try { if (new URL(repo).protocol !== 'https:') throw 0; } catch { fail(where, `repo "${repo}" must be an https:// URL`); } }
+    if (!Number.isInteger(json.apiVersion) || json.apiVersion < 1) fail(where, 'apiVersion must be a positive integer (the manifest apiVersion)');
+
+    const description = String(json.description ?? '').trim();
+    if (description.length > 280) fail(where, `description must be <=280 chars (is ${description.length})`);
+    const checkedWith = String(json.checkedWith ?? '').trim().replace(/^v/, '');
+    if (checkedWith && !SEMVER_RE.test(checkedWith)) fail(where, `checkedWith "${checkedWith}" must be a SUB/WAVE version like 1.31.0`);
+    const submitted = String(json.submitted ?? '').trim();
+    if (submitted && !DATE_RE.test(submitted)) fail(where, `submitted "${submitted}" must be yyyy-mm-dd`);
+    if (json.hostFiles !== undefined && typeof json.hostFiles !== 'boolean') fail(where, 'hostFiles must be true or false');
+
+    const c = json.conformance;
+    if (!c || typeof c !== 'object' || Array.isArray(c)) {
+      fail(where, 'conformance is required: the {pass, warn, fail, skip} counts from `npm --prefix router run conformance -- <plugin> --json`');
+    } else {
+      for (const k of CONFORMANCE_OUTCOMES) {
+        if (!Number.isInteger(c[k]) || c[k] < 0) fail(where, `conformance.${k} must be a whole number`);
+      }
+      if (Number.isInteger(c.fail) && c.fail > 0) fail(where, `conformance has ${c.fail} failed check(s): a listed plugin passes the kit`);
+    }
+
+    out.push(clean({
+      slug,
+      name,
+      plugin,
+      connectsTo,
+      repo,
+      apiVersion: json.apiVersion,
+      description: description || undefined,
+      author: json.author ? String(json.author).trim().slice(0, 60) : undefined,
+      checkedWith: checkedWith || undefined,
+      conformance: c && typeof c === 'object' ? Object.fromEntries(CONFORMANCE_OUTCOMES.map((k) => [k, c[k]])) : undefined,
+      hostFiles: json.hostFiles === true,
+      submitted: submitted || undefined,
+    }));
+  }
+  return out;
+}
+
 async function main() {
-  const [skills, personas, shows, stations, apps] = await Promise.all([
-    buildSkills(), buildPersonas(), buildShows(), buildStations(), buildApps(),
+  const [skills, personas, shows, stations, apps, plugins] = await Promise.all([
+    buildSkills(), buildPersonas(), buildShows(), buildStations(), buildApps(), buildPlugins(),
   ]);
   if (errors.length) {
     console.error(`✖ ${errors.length} catalog problem(s):`);
@@ -381,8 +460,8 @@ async function main() {
     console.warn(`⚠ ${warnings.length} style warning(s) — not blocking:`);
     for (const w of warnings) console.warn(`  - ${w}`);
   }
-  const catalog = { version: 1, generatedAt: new Date().toISOString(), skills, personas, shows, stations, apps };
-  const counts = `skills=${skills.length} personas=${personas.length} shows=${shows.length} stations=${stations.length} apps=${apps.length}`;
+  const catalog = { version: 1, generatedAt: new Date().toISOString(), skills, personas, shows, stations, apps, plugins };
+  const counts = `skills=${skills.length} personas=${personas.length} shows=${shows.length} stations=${stations.length} apps=${apps.length} plugins=${plugins.length}`;
   if (CHECK) {
     console.log(`✓ catalog valid (${counts})`);
     return;

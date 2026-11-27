@@ -1,0 +1,303 @@
+name: Plugin submission → PR
+
+# Turns a "🔌 Submit a music-source plugin" issue (see
+# .github/ISSUE_TEMPLATE/add-plugin.yml) into a one-file pull request against
+# main. Unlike the other catalogs, merging is a review of the plugin's CODE, so
+# the PR carries a reviewer checklist and the generated entry only records what
+# the submission proved.
+#
+# The entry is derived, not typed: name, label and apiVersion come from the
+# pasted manifest, and the conformance counts from the pasted `--json` report,
+# whose plugin must be the manifest's and whose `ok` must be true.
+#
+# Security: the issue body is UNTRUSTED user input. It is parsed and written to
+# a file entirely inside actions/github-script via the REST API (Buffer/base64,
+# createOrUpdateFileContents) and NEVER interpolated into a shell `run:` step.
+# The only file this workflow can write is plugins/<name>.json, where <name>
+# must match the router's plugin-name rule. The pasted JSON is parsed, never
+# evaluated, and nothing from the plugin's repository is fetched or run.
+#
+# Mirrors the plugin checks in scripts/build-catalog.mjs (the authority, which
+# fails CI) so a submitter gets a clear comment on their own issue. Keep the two
+# in lockstep.
+
+# NOTE: the `plugin-submission` label MUST exist as a repo label, otherwise
+# GitHub silently drops it from the issue template and the `if:` guard below
+# never matches. `labeled` starts a submission (the template applies the label
+# at creation) and is how a maintainer re-triggers one; `edited` refreshes it.
+on:
+  issues:
+    types: [edited, labeled]
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+concurrency:
+  group: plugin-submission-${{ github.event.issue.number }}
+  cancel-in-progress: false
+
+jobs:
+  build-pr:
+    name: Build plugin PR from issue
+    runs-on: ubuntu-latest
+    outputs:
+      branch: ${{ steps.build.outputs.branch }}
+      built: ${{ steps.build.outputs.built }}
+    if: contains(join(github.event.issue.labels.*.name, ','), 'plugin-submission') && (github.event.action != 'labeled' || github.event.label.name == 'plugin-submission')
+    steps:
+      - uses: actions/github-script@v7
+        id: build
+        with:
+          script: |
+            const issue = context.payload.issue;
+            const { owner, repo } = context.repo;
+            const BASE = 'main';
+            const DIR = 'plugins';
+
+            // Mirrors scripts/build-catalog.mjs — keep in lockstep.
+            const PLUGIN_NAME_RE = /^[a-z][a-z0-9-]{1,31}$/;
+            const BUILTIN_SOURCES = ['navidrome', 'jellyfin', 'plex', 'mock'];
+            const SEMVER_RE = /^\d+\.\d+\.\d+$/;
+            const OUTCOMES = ['pass', 'warn', 'fail', 'skip'];
+
+            // --- 1. Parse the issue-form body into a { heading: value } map ---
+            // Each field renders as "### <label>\n\n<value>"; an empty optional
+            // field is "_No response_". A `render: json` textarea arrives wrapped
+            // in a ```json fence, which is stripped below.
+            const body = issue.body || '';
+            const fields = {};
+            let curKey = null, buf = [];
+            const flush = () => {
+              if (curKey === null) return;
+              let v = buf.join('\n').trim();
+              if (v === '_No response_') v = '';
+              fields[curKey] = v;
+            };
+            for (const line of body.split(/\r?\n/)) {
+              const h = line.match(/^###\s+(.+?)\s*$/);
+              if (h) { flush(); curKey = h[1].trim(); buf = []; }
+              else if (curKey !== null) { buf.push(line); }
+            }
+            flush();
+            const get = (label) => (fields[label] || '').trim();
+            const unfence = (v) => v.replace(/^```[a-z]*\s*\n?/i, '').replace(/\n?```\s*$/, '').trim();
+
+            const repoUrl = get('Source repository').replace(/\/+$/, '');
+            const connectsTo = get('Connects to');
+            const manifestRaw = unfence(get('Manifest'));
+            const reportRaw = unfence(get('Conformance report'));
+            const version = get('SUB/WAVE version').replace(/^v/, '');
+            const hostFiles = get('Reads files on the host') === 'Yes';
+            const description = get('Description');
+            const author = get('Author');
+
+            // --- 2. Validate ---
+            const problems = [];
+            const parse = (raw, field) => {
+              if (!raw) { problems.push(`**${field}** is required.`); return null; }
+              try {
+                const v = JSON.parse(raw);
+                if (v && typeof v === 'object' && !Array.isArray(v)) return v;
+              } catch {}
+              problems.push(`**${field}** isn't a JSON object. Paste the whole file or output, unchanged.`);
+              return null;
+            };
+            const manifest = parse(manifestRaw, 'Manifest');
+            const report = parse(reportRaw, 'Conformance report');
+
+            let isHttps = false;
+            try { isHttps = new URL(repoUrl).protocol === 'https:'; } catch {}
+            if (!repoUrl) problems.push('**Source repository** is required.');
+            else if (!isHttps) problems.push('**Source repository** must be an `https://` link.');
+            if (!connectsTo) problems.push('**Connects to** is required.');
+            else if (connectsTo.length > 60) problems.push(`**Connects to** must be 60 characters or fewer (yours is ${connectsTo.length}).`);
+            if (description.length > 280) problems.push(`**Description** must be 280 characters or fewer (yours is ${description.length}).`);
+            if (version && !SEMVER_RE.test(version)) problems.push('**SUB/WAVE version** must look like `1.35.0`.');
+
+            const name = manifest && typeof manifest.name === 'string' ? manifest.name : '';
+            const label = manifest && typeof manifest.label === 'string' ? manifest.label.trim() : '';
+            const apiVersion = manifest ? manifest.apiVersion : undefined;
+            if (manifest) {
+              if (!PLUGIN_NAME_RE.test(name)) problems.push('The manifest `name` must match `^[a-z][a-z0-9-]{1,31}$` (the router refuses anything else).');
+              else if (BUILTIN_SOURCES.includes(name)) problems.push(`The manifest \`name\` "${name}" is a built-in source, and the router refuses a plugin that shadows one. Rename it.`);
+              if (!label) problems.push('The manifest has no `label`, which is the name shown on the card.');
+              else if (label.length > 60) problems.push('The manifest `label` must be 60 characters or fewer.');
+              if (!Number.isInteger(apiVersion) || apiVersion < 1) problems.push('The manifest `apiVersion` must be a positive whole number.');
+            }
+
+            const counts = { pass: 0, warn: 0, fail: 0, skip: 0 };
+            if (report) {
+              const checks = Array.isArray(report.checks) ? report.checks : null;
+              if (!checks || checks.length === 0) problems.push('The **Conformance report** has no `checks`. Run the kit with `--json` and paste its whole output.');
+              else for (const c of checks) {
+                if (c && OUTCOMES.includes(c.outcome)) counts[c.outcome] += 1;
+              }
+              if (manifest && report.plugin !== name) problems.push(`The **Conformance report** is for \`${report.plugin}\`, but the manifest is \`${name}\`.`);
+              if (checks && counts.fail > 0) {
+                const failed = checks.filter((c) => c && c.outcome === 'fail').map((c) => `\`${c.name}\``);
+                problems.push(`The **Conformance report** has ${counts.fail} failed check(s): ${failed.join(', ')}. A listed plugin passes the kit.`);
+              } else if (checks && report.ok !== true) {
+                problems.push('The **Conformance report** is not marked `"ok": true`. Paste the output of a passing run, unchanged.');
+              }
+            }
+
+            const fail = async (lines) => {
+              await github.rest.issues.createComment({
+                owner, repo, issue_number: issue.number,
+                body: `⚠️ I couldn't build a pull request from this submission:\n\n` +
+                  lines.map((l) => `- ${l}`).join('\n') +
+                  `\n\nEdit the issue to fix it and I'll try again automatically.`,
+              });
+              await github.rest.issues.addLabels({
+                owner, repo, issue_number: issue.number, labels: ['needs-info'],
+              }).catch(() => {});
+            };
+
+            if (problems.length) { core.setOutput('built', 'false'); await fail(problems); return; }
+
+            // --- 3. Build the entry ---
+            const entry = { name: label, plugin: name, connectsTo, repo: repoUrl, apiVersion };
+            if (description) entry.description = description;
+            if (author) entry.author = author.slice(0, 60);
+            if (version) entry.checkedWith = version;
+            entry.conformance = counts;
+            entry.hostFiles = hostFiles;
+            entry.submitted = new Date(issue.created_at).toISOString().slice(0, 10);
+
+            const filePath = `${DIR}/${name}.json`;
+            const content = JSON.stringify(entry, null, 2) + '\n';
+            const contentB64 = Buffer.from(content, 'utf8').toString('base64');
+
+            // A plugin already listed under this name by another issue is an
+            // update or a clash, which a maintainer settles, not this bot.
+            try {
+              await github.rest.repos.getContent({ owner, repo, path: filePath, ref: BASE });
+              core.setOutput('built', 'false');
+              await fail([`A plugin named \`${name}\` is already listed (\`${filePath}\`). If this is an update to it, say so in a comment and a maintainer will take it from here; otherwise rename your plugin.`]);
+              return;
+            } catch (e) {
+              if (e.status !== 404) throw e;
+            }
+
+            // --- 4. Ensure a branch off main ---
+            const branch = `plugin/${name}`;
+            const baseRef = await github.rest.git.getRef({ owner, repo, ref: `heads/${BASE}` });
+            try {
+              await github.rest.git.createRef({ owner, repo, ref: `refs/heads/${branch}`, sha: baseRef.data.object.sha });
+            } catch (e) {
+              if (e.status !== 422) throw e; // 422 = branch already exists (edited issue)
+            }
+
+            // --- 5. Write/refresh the entry on that branch ---
+            let prevContent = '';
+            let existingSha;
+            try {
+              const existing = await github.rest.repos.getContent({ owner, repo, path: filePath, ref: branch });
+              existingSha = existing.data.sha;
+              prevContent = Buffer.from(existing.data.content || '', 'base64').toString('utf8');
+            } catch (e) {
+              if (e.status !== 404) throw e;
+            }
+            await github.rest.repos.createOrUpdateFileContents({
+              owner, repo, path: filePath, branch,
+              message: `feat(plugins): add ${label} (from #${issue.number})`,
+              content: contentB64,
+              ...(existingSha ? { sha: existingSha } : {}),
+            });
+
+            // --- 6. Open the PR (or reuse the existing one) ---
+            const open = await github.rest.pulls.list({ owner, repo, state: 'open', head: `${owner}:${branch}` });
+            let pr = open.data[0];
+            let openedPr = false;
+            const prBody =
+              `Adds **${label}** (\`${name}\`, plugs into ${connectsTo}) to the [plugins directory](https://getsubwave.com/plugins).\n\n` +
+              `Generated automatically from #${issue.number}. Closes #${issue.number}.\n\n` +
+              `Source: ${repoUrl}\n\n` +
+              '```json\n' + content + '```\n\n' +
+              `### Review before merging\n\n` +
+              `A listed plugin runs inside every station that installs it. Read the code at the link above, at the version submitted:\n\n` +
+              `- [ ] It talks only to what it says it connects to: no other hosts, no telemetry.\n` +
+              `- [ ] It downloads and runs no further code (no \`eval\`, \`Function\`, \`child_process\`, dynamic \`import()\` of a URL).\n` +
+              `- [ ] It reads files only under its configured path (if \`hostFiles\`) and writes only under \`ctx.dataDir\`.\n` +
+              `- [ ] The manifest in the repo matches the one on the issue (name \`${name}\`, apiVersion ${apiVersion}).\n` +
+              `- [ ] Its README says how to install it and what to mount.\n`;
+            if (!pr) {
+              const created = await github.rest.pulls.create({
+                owner, repo, base: BASE, head: branch,
+                title: `feat(plugins): add ${label}`,
+                body: prBody,
+              });
+              pr = created.data;
+              openedPr = true;
+              await github.rest.issues.addLabels({ owner, repo, issue_number: pr.number, labels: ['plugins'] }).catch(() => {});
+            } else {
+              await github.rest.pulls.update({ owner, repo, pull_number: pr.number, body: prBody });
+            }
+
+            // Renaming the plugin on the issue moves the next run to a new branch;
+            // close any other open PR built from this issue so one remains.
+            const madeBy = `Generated automatically from #${issue.number}.`;
+            const allOpen = await github.paginate(github.rest.pulls.list, { owner, repo, state: 'open', per_page: 100 });
+            for (const stale of allOpen) {
+              if (stale.number === pr.number) continue;
+              if (!(stale.body || '').includes(madeBy)) continue;
+              await github.rest.issues.createComment({
+                owner, repo, issue_number: stale.number,
+                body: `Superseded by #${pr.number}: #${issue.number} now builds \`${filePath}\`. Closing this one so the submission has a single open PR.`,
+              });
+              await github.rest.pulls.update({ owner, repo, pull_number: stale.number, state: 'closed' });
+            }
+
+            core.setOutput('branch', branch);
+            core.setOutput('built', 'true');
+
+            // --- 7. Tell the contributor ---
+            await github.rest.issues.removeLabel({ owner, repo, issue_number: issue.number, name: 'needs-info' }).catch(() => {});
+            if (!openedPr && prevContent === content) return;
+
+            await github.rest.issues.createComment({
+              owner, repo, issue_number: issue.number,
+              body: `✅ Opened ${pr.html_url} with your plugin at \`${filePath}\`.\n\n` +
+                `A maintainer will read the plugin's code before merging it, and may ask questions there. ` +
+                `Once merged it appears on every station's /plugins directory within the hour. ` +
+                `Need to change something? Edit this issue and the PR updates automatically.`,
+            });
+
+  # A PR opened with GITHUB_TOKEN triggers no further workflows, so run the
+  # catalog check here and report a failure back on the issue.
+  validate:
+    name: Validate generated entry
+    needs: build-pr
+    if: needs.build-pr.outputs.built == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.build-pr.outputs.branch }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Validate catalog entries
+        shell: bash
+        run: |
+          set -o pipefail
+          node scripts/build-catalog.mjs --check 2>&1 | tee /tmp/catalog-check.log
+      - name: Report failure on the issue
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            let log = '';
+            try { log = fs.readFileSync('/tmp/catalog-check.log', 'utf8').slice(-3000); } catch {}
+            const fence = '```';
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.issue.number,
+              body: '⚠️ The catalog check failed on the branch built from this submission:\n\n' +
+                fence + '\n' + log + '\n' + fence + '\n\n' +
+                'A maintainer will take a look — you may not need to do anything.',
+            });

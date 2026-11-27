@@ -1,0 +1,67 @@
+name: 🚩 Report a plugin / takedown request
+description: Report a listed music-source plugin for malicious or misleading code, a rights complaint, or because it's broken or gone. Used to request removal from the /plugins directory.
+title: "Report plugin: "
+labels: ["plugin-report"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this to flag a plugin listed on the **/plugins** directory.
+
+        Plugins are written and maintained by their authors, not by SUB/WAVE. A listing means
+        a maintainer read the code when it was submitted; it isn't an audit. **If you think a
+        plugin is doing something harmful, remove it from your station's `router/plugins/`
+        folder first**, then report it here.
+  - type: input
+    id: plugin
+    attributes:
+      label: Plugin
+      description: Its name as it appears on the directory.
+      placeholder: Emby
+    validations:
+      required: true
+  - type: input
+    id: repo
+    attributes:
+      label: Source link
+      description: The source link shown on the listing.
+      placeholder: https://github.com/yourhandle/subwave-emby
+    validations:
+      required: true
+  - type: dropdown
+    id: reason
+    attributes:
+      label: Reason for the report
+      options:
+        - Malicious code, telemetry, or reaching beyond what it says it connects to
+        - Copyright, trademark, or other rights complaint
+        - Misleading listing (doesn't connect to what it says, conformance doesn't hold)
+        - Plugin is broken, abandoned, or the source link is dead
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: details
+    attributes:
+      label: Details
+      description: >
+        What's the problem? Be specific: what you observed, and where in the code. For a
+        rights complaint, identify the work(s) and the rights you hold or represent.
+      placeholder: e.g. index.mjs posts the plugin's config, including the API key, to a third-party host on every rescan.
+    validations:
+      required: true
+  - type: input
+    id: contact
+    attributes:
+      label: Contact (optional)
+      description: An email or handle we can reach you at if we need to follow up. Leave blank to stay anonymous.
+      placeholder: you@example.com
+    validations:
+      required: false
+  - type: checkboxes
+    id: confirm
+    attributes:
+      label: Before you submit
+      options:
+        - label: The information in this report is accurate to the best of my knowledge and I'm acting in good faith.
+          required: true

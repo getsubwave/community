@@ -1,0 +1,116 @@
+name: 🔌 Submit a music-source plugin
+description: List a music-source plugin you wrote on the /plugins directory, so stations on another server can find it. Fill this in and a pull request is opened for you; a maintainer reviews the code before it is listed.
+title: "Add plugin: "
+labels: ["plugin-submission"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for writing a plugin! Paste two things from your plugin below: its
+        `subwave-source.json`, and the conformance kit's JSON report. A bot turns this into a
+        one-file pull request, and the plugin's name, label and API version are taken from
+        the manifest, so they can't drift from the code.
+
+        **A plugin is code that runs inside every station that installs it**, so a listing
+        is a review of that code, not only of this form. Expect questions on the PR.
+
+        Run the kit from a SUB/WAVE checkout against a real server or library:
+
+        ```bash
+        npm --prefix router install
+        npm --prefix router run conformance -- /path/to/your-plugin --config key=value --json
+        ```
+
+        It has to pass: a report with a failed check can't be listed.
+  - type: input
+    id: repo
+    attributes:
+      label: Source repository
+      description: Where the plugin's code lives, public and https. Point at the exact folder if it's part of a bigger repo.
+      placeholder: https://github.com/yourhandle/subwave-emby
+    validations:
+      required: true
+  - type: input
+    id: connects
+    attributes:
+      label: Connects to
+      description: What it plays from, in a few words. Shown as "Plugs into …" on the card.
+      placeholder: Emby
+    validations:
+      required: true
+  - type: textarea
+    id: manifest
+    attributes:
+      label: Manifest
+      description: Paste your plugin's `subwave-source.json`, whole.
+      render: json
+    validations:
+      required: true
+  - type: textarea
+    id: conformance
+    attributes:
+      label: Conformance report
+      description: Paste the output of the conformance kit run with `--json`, whole.
+      render: json
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: SUB/WAVE version
+      description: The SUB/WAVE version you ran the kit with (`subwave status`, or the admin footer), like 1.35.0.
+      placeholder: 1.35.0
+    validations:
+      required: false
+  - type: dropdown
+    id: hostfiles
+    attributes:
+      label: Reads files on the host
+      description: Does the plugin read files from the operator's machine, so they have to mount a folder into the router?
+      options:
+        - "No"
+        - "Yes"
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: One or two sentences about what it does and anything an operator should know. Max 280 characters.
+      placeholder: Plays an Emby library, with playlists and favourites. Needs an Emby API key.
+    validations:
+      required: false
+  - type: input
+    id: author
+    attributes:
+      label: Author
+      description: Your name or @handle. A leading @ links to your GitHub profile.
+      placeholder: "@yourhandle"
+    validations:
+      required: false
+  - type: markdown
+    attributes:
+      value: |
+        ### Listing terms
+
+        By listing a plugin you agree:
+
+        - You wrote it, or have the right to share it, and its source stays public at the link above.
+        - It talks only to the server or files it says it connects to. No telemetry, no
+          downloading and running further code, no reaching for the station's credentials.
+        - It's built and maintained by you, not by SUB/WAVE. A listing means a maintainer read
+          this version of the code; it isn't an audit, and it doesn't cover later versions.
+        - The listing may be removed on a valid complaint or at the maintainer's discretion.
+
+        This isn't legal advice.
+  - type: checkboxes
+    id: confirm
+    attributes:
+      label: Before you submit
+      options:
+        - label: The conformance report above is from this version of the plugin, run against a real server or library.
+          required: true
+        - label: I understand a pull request will be opened from this issue and a maintainer will read the plugin's code before merging it.
+          required: true
+        - label: I agree to the listing terms above.
+          required: true
