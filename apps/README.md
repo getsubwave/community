@@ -49,7 +49,7 @@ review or revert.
 | ------------- | -------- | ----- |
 | `name`        | **yes**  | Display name on the card. |
 | `url`         | **yes**  | Where someone gets it — store listing, site, or repo. Must start with `http://` or `https://`. |
-| `type`        | **yes**  | One of the six below. |
+| `type`        | **yes**  | One of the seven below. |
 | `description` | no       | One or two sentences. Max 280 characters. |
 | `author`      | no       | Your name or `@handle`. A leading `@` renders as a link to your GitHub profile. |
 | `platforms`   | no       | Up to 6 short tags — `"iOS"`, `"Linux"`, `"Sonos"`, `"Home Assistant"`. Max 24 characters each. |
